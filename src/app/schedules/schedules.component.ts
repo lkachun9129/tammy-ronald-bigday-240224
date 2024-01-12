@@ -14,6 +14,7 @@ export interface Session {
     dateTime: DateTime;
     events: Event[];
     parallelEventCount: number;
+    avalibilityMap: number[];   // 0=free, 1=current, 2=previous
 }
 
 @Component({
@@ -56,7 +57,8 @@ export class SchedulesComponent {
             let session = {
                 dateTime: this._scheduleStartDateTime.plus({ minute: i * 15 }),
                 events: [],
-                parallelEventCount: 0
+                parallelEventCount: 0,
+                avalibilityMap: []
             };
             this.sessions.push(session);
         }
@@ -77,17 +79,17 @@ export class SchedulesComponent {
                 color: '#EEEEEE'
             };
             let idx = this.sessions.findIndex((session) => session.dateTime.equals(event.startDateTime));
-            this.sessions[idx].events.push(event);
-            this.sessions[idx].parallelEventCount++;
+            let currentSession = this.sessions[idx];
+            currentSession.events.push(event);
+            currentSession.parallelEventCount++;
 
+            // for events span across two sessions, increase event count for the next session
             for (let c = 1; c < event.sessionCount; ++c) {
                 this.sessions[idx + c].parallelEventCount++;
             }
 
-            this._maxParallelEventCount = Math.max(this.sessions[idx].parallelEventCount, this._maxParallelEventCount);
+            this._maxParallelEventCount = Math.max(currentSession.parallelEventCount, this._maxParallelEventCount);
         });
-
-
     }
 
     getEventColor(event: Event): string {
