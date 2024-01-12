@@ -1,0 +1,43 @@
+<h1>Schedules</h1>
+<mat-expansion-panel class="filter-panel" hideToggle>
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            Filters
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+    <mat-form-field>
+        <mat-label>Filter by name</mat-label>
+        <mat-select multiple [(value)]="selectedNames">
+            @for (name of names; track name) {
+            <mat-option [value]="name">{{name}}</mat-option>
+            }
+        </mat-select>
+    </mat-form-field>
+</mat-expansion-panel>
+
+<div class="schedule-container" *ngIf="ready">
+    <div class="datetime-col">
+        <mat-grid-list cols="1" rowHeight="50px" gutterSize="5px">
+            @for (session of sessions; track session) {
+                <mat-grid-tile>{{session.dateTime | luxonDateFormat: 'dd/L HH:mm'}}</mat-grid-tile>
+            }
+        </mat-grid-list>
+    </div>
+    <div class="event-col">
+        <mat-grid-list [cols]="maxParallelEventCount" rowHeight="50px" gutterSize="5px">
+            @for (session of sessions; track session) {
+                @for (event of session.events; track event) {
+                    <mat-grid-tile [rowspan]="event.sessionCount" [style.background]="getEventColor(event)" (click)="showEventDetails(event)">
+                        <div class="event-container">
+                            <div class="event-desc">{{event.description}}</div>
+                            <div class="event-venue"><i class="fas fa-map-marker-alt"></i>{{event.venue}}</div>
+                        </div>
+                    </mat-grid-tile>
+                }
+                @if (session.parallelEventCount < maxParallelEventCount) {
+                    <mat-grid-tile [colspan]="maxParallelEventCount - session.parallelEventCount"></mat-grid-tile>
+                }
+            }
+        </mat-grid-list>
+    </div>
+</div>

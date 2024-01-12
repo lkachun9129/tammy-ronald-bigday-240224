@@ -1,0 +1,393 @@
+import { DateTime } from "luxon";
+
+export const schedules: EventInput[] = [
+    {
+        startDateTime: '23/2 15:00',
+        duration: 15,
+        description: `酒店check in`,
+        venue: 'Room 11',
+        participants: [],
+        gears: [],
+        remarks: ['1) 買湯圓+渣渣?']
+    }, {
+        startDateTime: '23/2 23:00',
+        duration: 15,
+        description: `Ronald上頭`,
+        venue: 'Mei Foo',
+        participants: ['Ronald', 'Ronald爸'],
+        gears: ['上頭套裝 (男家)', '龍鳳燭 (男家)', '紅頭繩 (男家)', '龍鳳對餅 (男家)', '紅枱布 (男家)', '紅睡衣 (男家)', '紅拖鞋 (男家)', '紅底衫褲 (男家)', '碌柚葉', '湯圓', '水果'],
+        remarks: ['1) 男家上頭完成後電話通', '知女家上頭']
+    }, {
+        startDateTime: '23/2 23:15',
+        duration: 15,
+        description: `Tammy上頭`,
+        venue: 'Room 11',
+        participants: ['Tammy', 'Tammy媽'],
+        gears: ['上頭套裝 (女家)', '電子龍鳳燭 (女家)', '紅頭繩 (女家)', '龍鳳對餅 (女家)', '紅枱布 (女家)', '紅睡衣 (女家)', '紅拖鞋 (女家)', '紅底衫褲 (女家)', '扁柏', '碌柚葉', '湯圓', '水果'],
+        remarks: []
+    }, {
+        startDateTime: '24/2 05:00',
+        duration: 60,
+        description: `姊妹化妝+換裝`,
+        venue: 'Room 11',
+        participants: ['所有姊妹'],
+        gears: ['姊妹手花'],
+        remarks: []
+    }, {
+        startDateTime: '24/2 05:00',
+        duration: 60,
+        description: `Tammy媽化妝+換裝`,
+        venue: 'Room 11',
+        participants: ['Tammy媽'],
+        gears: ['Tammy媽媽晚裝', 'Tammy媽媽晚裝鞋', 'Tammy家人襟花'],
+        remarks: []
+    }, {
+        startDateTime: '24/2 06:00',
+        duration: 60,
+        description: `食早餐`,
+        venue: 'Room 11',
+        participants: ['Tammy', 'Tammy媽', '所有姊妹'],
+        gears: [],
+        remarks: []
+    }, {
+        startDateTime: '24/2 07:00',
+        duration: 15,
+        description: `著褂`,
+        venue: 'Room 11',
+        participants: ['Tammy', 'Tammy媽', '姊妹A', '姊妹B'],
+        gears: ['裙褂', '褂鞋', '金器'],
+        remarks: ['1) 安排兩位身高相若的', '姊妹協助', '2) Tammy媽對新娘講心底話']
+    }, {
+        startDateTime: '24/2 07:00',
+        duration: 15,
+        description: `Tammy家人集合`,
+        venue: 'Room 11',
+        participants: ['Tammy家人'],
+        gears: [],
+        remarks: []
+    }, {
+        startDateTime: '24/2 07:15',
+        duration: 15,
+        description: `準備接新娘`,
+        venue: 'Room 11',
+        participants: ['姊妹C', '姊妹D', '姊妹E'],
+        gears: ['玩新郎道具', '攔門紅色花球 (同心結+ 紅絲帶）', '敬茶cushion', '敬茶葉杯及水壺', '紅紙杯', '蓮子+ 紅棗+ 茶葉'],
+        remarks: ['1) Lock the connecting door between two rooms']
+    }, {
+        startDateTime: '24/2 07:30',
+        duration: 15,
+        description: `拍攝新娘及姊妹花絮`,
+        venue: 'Room 11',
+        participants: ['Tammy', '所有姊妹'],
+        gears: [],
+        remarks: []
+    }, {
+        startDateTime: '24/2 08:00',
+        duration: 15,
+        description: `接新娘
+遊戲時間`,
+        venue: 'Room 11',
+        participants: ['Tammy', 'Ronald', '所有兄弟姊妹', 'Tammy家人'],
+        gears: ['玩新郎道具', '攔門紅色花球 (同心結+ 紅絲帶）', '腳架'],
+        remarks: ['1) Tammy大哥setup腳架直播', '遊戲時間']
+    }, {
+        startDateTime: '24/2 08:15',
+        duration: 15,
+        description: `1) 愛的宣言 (1min) [Ronald]
+2) 愛的宣言 (1min) [Tammy]
+3) 送花球
+4) 鍚錫`,
+        venue: 'Room 11',
+        participants: ['Tammy', 'Ronald', '所有兄弟姊妹', 'Tammy家人'],
+        gears: [],
+        remarks: ['1) 所有兄弟姊妹做佈景板', '2) 爸爸帶新娘出來']
+    }, {
+        startDateTime: '24/2 08:30',
+        duration: 30,
+        description: `Tammy家人斟茶
+1) Tammy爸媽
+2) Tammy大哥
+3) Tammy二哥
+
+拍攝全家福`,
+        venue: 'Room 11',
+        participants: ['Ronald', 'Tammy', 'Tammy家人', '所有姊妹'],
+        gears: ['斟茶金器表', '原子筆', '金器', '金器回收袋', '敬茶cushion', '敬茶葉杯及水壺', '紅紙杯', '蓮子+ 紅棗+ 茶葉'],
+        remarks: ['安排一位口才好的姊妹讀敬茶金句']
+    }, {
+        startDateTime: '24/2 08:30',
+        duration: 30,
+        description: `準備出門物資`,
+        venue: 'Room 11',
+        participants: [],
+        gears: ['紅傘'],
+        remarks: ['1) Unlock the connecting door between two rooms']
+    }, {
+        startDateTime: '24/2 09:00',
+        duration: 15,
+        description: `出門環節`,
+        venue: '酒店大堂',
+        participants: ['Tammy', 'Ronald', '所有兄弟姊妹'],
+        gears: [],
+        remarks: ['1) 上車兜去迴旋處轉個圈', '2) 撥米', '3) 安排一位身高相約姊妹擔遮', '4) 新郎新娘一齊左腳出先']
+    }, {
+        startDateTime: '24/2 09:15',
+        duration: 15,
+        description: `Ronald家人斟茶
+1) Ronald爸媽
+
+拍攝全家福`,
+        venue: 'Room 11',
+        participants: ['Ronald', 'Tammy', '所有姊妹', 'Ronald家人'],
+        gears: ['斟茶金器表', '原子筆', '金器', '金器回收袋', '敬茶cushion', '敬茶葉杯及水壺', '紅紙杯', '蓮子+ 紅棗+ 茶葉'],
+        remarks: ['1) 安排一位口才好的姊妹讀', '敬茶金句', '2) 食湯圓', '3) 入門時Ronald媽在睡房等待']
+    }, {
+        startDateTime: '24/2 09:30',
+        duration: 60,
+        description: `新娘換裝`,
+        venue: 'Room 11',
+        participants: ['Tammy', '化妝師'],
+        gears: ['外拍婚紗', 'Nude bra', '新娘鞋', '抹身布'],
+        remarks: []
+    }, {
+        startDateTime: '24/2 10:30',
+        duration: 45,
+        description: `Brunch`,
+        venue: '0',
+        participants: ['所有兄弟姊妹'],
+        gears: [],
+        remarks: ['叫外賣?']
+    }, {
+        startDateTime: '24/2 11:15',
+        duration: 15,
+        description: `香港遨凱酒店 --> 西九`,
+        venue: '0',
+        participants: ['Ronald', 'Tammy', '所有兄弟姊妹', '攝影師', '化妝師'],
+        gears: [],
+        remarks: []
+    }, {
+        startDateTime: '24/2 11:30',
+        duration: 60,
+        description: `外拍`,
+        venue: '西九',
+        participants: ['Ronald', 'Tammy', '所有兄弟姊妹', '攝影師', '化妝師'],
+        gears: ['證婚花球', 'Tammy外套'],
+        remarks: []
+    }, {
+        startDateTime: '24/2 12:30',
+        duration: 15,
+        description: `西九 --> sky100`,
+        venue: '0',
+        participants: ['Ronald', 'Tammy', '所有兄弟姊妹', '攝影師', '化妝師'],
+        gears: [],
+        remarks: []
+    }, {
+        startDateTime: '24/2 12:45',
+        duration: 60,
+        description: `新娘換裝`,
+        venue: '新娘房(sky100)',
+        participants: ['Tammy', '化妝師'],
+        gears: ['證婚婚紗', 'Nude bra', '頭紗', '新娘鞋', '證婚花球'],
+        remarks: []
+    }, {
+        startDateTime: '24/2 13:45',
+        duration: 15,
+        description: `影冚頭紗相`,
+        venue: '新娘房(sky100)',
+        participants: ['Tammy', 'Tammy爸', '攝影師'],
+        gears: [],
+        remarks: []
+    }, {
+        startDateTime: '24/2 14:00',
+        duration: 15,
+        description: `律師點名`,
+        venue: '新娘房(sky100)',
+        participants: ['Tammy', 'Tammy爸', 'Ronald', 'Ronald爸', '律師', '姊妹Winglam', '兄弟XX'],
+        gears: ['[律師袋]'],
+        remarks: ['1) [律師袋]姊妹Winglam跟身', '2) 姊妹Winglam貼身緊隨律師']
+    }, {
+        startDateTime: '24/2 14:00',
+        duration: 15,
+        description: `佈置證婚枱`,
+        venue: 'sky100',
+        participants: ['律師', '姊妹Winglam'],
+        gears: [],
+        remarks: []
+    }, {
+        startDateTime: '24/2 14:00',
+        duration: 15,
+        description: `律師briefing`,
+        venue: '新娘房(sky100)',
+        participants: ['Tammy', 'Tammy爸', 'Ronald', 'Ronald爸', '律師', '姊妹Winglam', '兄弟XX'],
+        gears: [],
+        remarks: []
+    }, {
+        startDateTime: '24/2 14:15',
+        duration: 15,
+        description: `最後綵排`,
+        venue: '新娘房(sky100)',
+        participants: ['Tammy', 'Tammy爸', 'Ronald', '律師'],
+        gears: [],
+        remarks: []
+    }, {
+        startDateTime: '24/2 14:30',
+        duration: 30,
+        description: `證婚儀式`,
+        venue: 'sky100',
+        participants: [],
+        gears: ['[律師袋]', '證婚花球', '花瓣'],
+        remarks: []
+    }, {
+        startDateTime: '24/2 15:00',
+        duration: 105,
+        description: `酒會`,
+        venue: 'sky100',
+        participants: [],
+        gears: [],
+        remarks: []
+    }, {
+        startDateTime: '24/2 16:45',
+        duration: 30,
+        description: `大門送別賓客`,
+        venue: '0',
+        participants: ['Ronald', 'Tammy'],
+        gears: [],
+        remarks: []
+    }, {
+        startDateTime: '24/2 17:15',
+        duration: 30,
+        description: `清場`,
+        venue: '0',
+        participants: ['sky100'],
+        gears: ['Foamboard相x12', 'backdrop名牌', '紅白酒'],
+        remarks: ['1) 向Mindwood回收', 'Foamboard相及backdrop名牌']
+    }, {
+        startDateTime: '24/2 17:15',
+        duration: 30,
+        description: `準備move out`,
+        venue: '0',
+        participants: [],
+        gears: [],
+        remarks: []
+    }, {
+        startDateTime: '24/2 17:45',
+        duration: 15,
+        description: `sky100 --> 囍雲軒`,
+        venue: '0',
+        participants: [],
+        gears: [],
+        remarks: []
+    }, {
+        startDateTime: '24/2 18:00',
+        duration: 30,
+        description: `新娘化裝`,
+        venue: '新娘房(囍雲軒)',
+        participants: ['Tammy', '化妝師'],
+        gears: [],
+        remarks: []
+    }, {
+        startDateTime: '24/2 18:30',
+        duration: 60,
+        description: `晚宴恭候`,
+        venue: '囍雲軒',
+        participants: [],
+        gears: [],
+        remarks: []
+    }, {
+        startDateTime: '24/2 18:30',
+        duration: 60,
+        description: `Tammy親人斟茶`,
+        venue: '囍雲軒',
+        participants: [],
+        gears: ['紅紙杯', '斟茶金器表', '原子筆', '金器', '金器回收袋', '敬茶cushion', '敬茶葉杯及水壺', '紅紙杯', '蓮子+ 紅棗+ 茶葉'],
+        remarks: []
+    }, {
+        startDateTime: '24/2 19:30',
+        duration: 15,
+        description: `晚宴入席`,
+        venue: '0',
+        participants: [],
+        gears: [],
+        remarks: []
+    }, {
+        startDateTime: '24/2 19:45',
+        duration: 15,
+        description: `Match in`,
+        venue: '囍雲軒',
+        participants: [],
+        gears: ['證婚花球', '花瓣'],
+        remarks: []
+    }, {
+        startDateTime: '24/2 20:00',
+        duration: 15,
+        description: `開席上菜`,
+        venue: '囍雲軒',
+        participants: [],
+        gears: [],
+        remarks: []
+    }, {
+        startDateTime: '24/2 20:15',
+        duration: 15,
+        description: `第二道菜`,
+        venue: '囍雲軒',
+        participants: [],
+        gears: [],
+        remarks: []
+    }, {
+        startDateTime: '24/2 20:15',
+        duration: 60,
+        description: `新娘換裝`,
+        venue: '新娘房(囍雲軒)',
+        participants: ['Tammy', '化妝師'],
+        gears: ['敬酒晚裝', '金器'],
+        remarks: []
+    }, {
+        startDateTime: '24/2 20:15',
+        duration: 60,
+        description: `新郎換裝`,
+        venue: '新娘房(囍雲軒)',
+        participants: ['Ronald'],
+        gears: ['敬酒禮服'],
+        remarks: []
+    }, {
+        startDateTime: '24/2 21:15',
+        duration: 15,
+        description: `敬酒`,
+        venue: '0',
+        participants: ['Ronald', 'Tammy', '所有兄弟姊妹'],
+        gears: [],
+        remarks: []
+    }, {
+        startDateTime: '24/2 22:45',
+        duration: 15,
+        description: `宴會結束`,
+        venue: '囍雲軒',
+        participants: [],
+        gears: [],
+        remarks: []
+    }
+]
+
+export interface EventInput {
+    startDateTime: string;
+    duration: number;
+    description: string;
+    venue: string;
+    participants: string[];
+    gears: string[];
+    remarks: string[];
+}
+
+export interface Event {
+    startDateTime: DateTime;
+    endDateTime: DateTime;
+    duration: number;
+    sessionCount: number;
+    description: string;
+    venue: string;
+    participants: string[];
+    gears: string[];
+    remarks: string[];
+
+    color: string;
+}
