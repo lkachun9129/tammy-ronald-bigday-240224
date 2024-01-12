@@ -1,0 +1,13 @@
+{
+  "schedules": [
+    {
+      "startDateTime": "24/2 07:00",
+      "duration": 30,
+      "event": "著褂",
+      "venue": "Room 11",
+      "participant": ["Tammy", "Tammy媽", "姊妹A", "姊妹B"],
+      "gear": ["裙褂", "褂鞋", "金器"],
+      "remarks": ["安排兩位身高相若的姊妹協助", "Tammy媽對新娘講心底話"]
+    }
+  ]
+}
