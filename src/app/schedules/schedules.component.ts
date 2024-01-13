@@ -1,5 +1,5 @@
+import { CommonModule, ViewportScroller } from '@angular/common';
 import { Component } from '@angular/core';
-import { DateTime } from 'luxon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -7,13 +7,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
-import { Event, EventInput, Gear } from '../models';
-import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
-import { EventDetailsDialog } from '../event-details-dialog/event-details-dialog.component';
 import { Router } from '@angular/router';
+import { DateTime } from 'luxon';
 import { AppData } from '../data';
-import { flatMap, mergeMap } from 'rxjs';
+import { EventDetailsDialog } from '../event-details-dialog/event-details-dialog.component';
+import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
+import { Event, EventInput, Gear } from '../models';
 
 export enum SessionType {
     Date = 0,
@@ -47,6 +46,7 @@ export class SchedulesComponent {
     private _gearMap: { [key: string]: Gear } = {};
 
     ready: boolean = false;
+    scrolledToEvent: boolean = false;
 
     get maxParallelEventCount(): number {
         return this._maxParallelEventCount;
@@ -60,7 +60,8 @@ export class SchedulesComponent {
 
     constructor(
         private readonly _router: Router,
-        private readonly _dialog: MatDialog
+        private readonly _dialog: MatDialog,
+        private readonly _viewerportScroller: ViewportScroller
     ) {
         this.loadGearMap();
         this.loadSchedules();
@@ -205,5 +206,15 @@ export class SchedulesComponent {
             height: '65vh',
             width: 'calc(100% - 50px)',
         });
+    }
+
+    scrollToEvent() {
+        let currentDateTime = DateTime.now();
+        for (let session of this.sessions) {
+            if (session.dateTime >= currentDateTime.plus({ minute: -45 })) {
+                this._viewerportScroller.scrollToAnchor(session.dateTime.toFormat('LLddHHmm'));
+                break;
+            }
+        }
     }
 }

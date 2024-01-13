@@ -48,7 +48,7 @@
                 @if (session.type == SessionType.Date) {
                     <mat-grid-tile [style.background]="'#deeeff'">{{session.dateTime | luxonDateFormat: 'dd/L'}}</mat-grid-tile>
                 } @else {
-                    <mat-grid-tile>{{session.dateTime | luxonDateFormat: 'HH:mm'}}</mat-grid-tile>
+                    <mat-grid-tile [id]="session.dateTime.toFormat('MMddHHmm')">{{session.dateTime | luxonDateFormat: 'HH:mm'}}</mat-grid-tile>
                 }
             }
         </mat-grid-list>
@@ -75,6 +75,7 @@
                                 <mat-grid-tile class="placeholder-tile" colspan="1"></mat-grid-tile>
                             }
                         }
+                        {{ scrollToEvent() }}
                     }
                 }
             </mat-grid-list>

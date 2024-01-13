@@ -12,6 +12,10 @@ export const routes: Routes = [
         component: GearsComponent
     },
     {
+        path: 'gears',
+        component: GearsComponent
+    },
+    {
         path: '**',
         component: SchedulesComponent
     }
