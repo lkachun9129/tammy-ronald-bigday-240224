@@ -1,3 +1,23 @@
+h1
+    font-size: 1.5em
+.sticky-header
+    background-color: #FFFFFF
+    position: -webkit-sticky /* Safari */
+    position: sticky
+    top: 0
+    z-index: 2
+.header
+    display: flex
+    div[mat-icon-button]
+        display: flex
+        align-items: center
+        justify-content: center
+        width: 50px
+        margin-right: 10px
+button[mat-menu-item] i
+    margin-right: 10px
+    width: 25px
+    text-align: center
 .schedule-container
     display: flex
 .datetime-col
@@ -5,6 +25,9 @@
     font-size: 0.7em
 .event-col
     width: calc(100% - 80px)
+    overflow-x: scroll
+.event-scroll-wrapper
+    position: relative
 
 .filter-panel
     margin-bottom: 10px

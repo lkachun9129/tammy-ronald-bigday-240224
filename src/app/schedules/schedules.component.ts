@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
 import { DateTime } from 'luxon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
-import { Event, schedules } from './schedules';
+import { Event, EventInput, schedules } from './schedules';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
 import { EventDetailsDialog } from '../event-details-dialog/event-details-dialog.component';
 
@@ -20,7 +22,7 @@ export interface Session {
 @Component({
     selector: 'app-schedules',
     standalone: true,
-    imports: [CommonModule, LuxonDateFormatPipe, MatDialogModule, MatExpansionModule, MatFormFieldModule, MatGridListModule, MatSelectModule],
+    imports: [CommonModule, LuxonDateFormatPipe, MatCheckboxModule, MatDialogModule, MatExpansionModule, MatFormFieldModule, MatGridListModule, MatMenuModule, MatSelectModule],
     templateUrl: './schedules.component.html',
     styleUrl: './schedules.component.sass'
 })
@@ -30,6 +32,7 @@ export class SchedulesComponent {
     private _scheduleEndDateTime: DateTime = DateTime.fromFormat('2024-02-25 00:15', 'yyyy-LL-dd HH:mm');
 
     private _maxParallelEventCount: number = 0;
+    private _showRelatedFirst: boolean = false;
 
     ready: boolean = false;
 
@@ -51,6 +54,8 @@ export class SchedulesComponent {
     }
 
     private loadSchedules(): void {
+        this.sessions.length = 0;
+
         let sessionCount: number = this._scheduleEndDateTime.diff(this._scheduleStartDateTime).as('minutes') / 15;
 
         for (let i = 0; i < sessionCount; ++i) {
@@ -63,7 +68,7 @@ export class SchedulesComponent {
             this.sessions.push(session);
         }
 
-        schedules.forEach(eventInput => {
+        let eventProcessor = (eventInput: EventInput) => {
             let startDateTime = DateTime.fromFormat(eventInput.startDateTime, 'dd/L HH:mm');
             let endDateTime = startDateTime.plus({ minute: eventInput.duration });
             let event: Event = {
@@ -72,7 +77,7 @@ export class SchedulesComponent {
                 duration: eventInput.duration,
                 sessionCount: eventInput.duration / 15,
                 description: eventInput.description,
-                venue: eventInput.venue == '0'? '--' : eventInput.venue,
+                venue: eventInput.venue == '0' ? '--' : eventInput.venue,
                 participants: eventInput.participants,
                 gears: eventInput.gears,
                 remarks: eventInput.remarks,
@@ -89,7 +94,39 @@ export class SchedulesComponent {
             }
 
             this._maxParallelEventCount = Math.max(currentSession.parallelEventCount, this._maxParallelEventCount);
-        });
+        };
+
+        if (this._showRelatedFirst) {
+            // process related events first
+            schedules.filter(x => {
+                for (let name of this.selectedNames) {
+                    if (x.participants.includes(name)) {
+                        return true;
+                    }
+                }
+                return false;
+            }).forEach(eventProcessor);
+
+            // process unrelated events later
+            schedules.filter(x => {
+                for (let name of this.selectedNames) {
+                    if (x.participants.includes(name)) {
+                        return false;
+                    }
+                }
+                return true;
+            }).forEach(eventProcessor);
+        } else {
+            schedules.forEach(eventProcessor);
+        }
+
+    }
+
+    onShowRelatedOnlyChanged(checked: boolean) {
+        this.ready = false;
+        this._showRelatedFirst = checked;
+        this.loadSchedules();
+        this.ready = true;
     }
 
     getEventColor(event: Event): string {
