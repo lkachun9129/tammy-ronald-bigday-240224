@@ -50,7 +50,7 @@ export class SchedulesComponent {
 
     sessions: Session[] = [];
 
-    names: string[] = ['Ronald', 'Tammy', 'Sam', 'Ngai', 'Curtis', 'May', 'Norman'];
+    names: string[] = ['姊妹Christy','姊妹Janet','姊妹Kapo','姊妹Nicole','姊妹Winglam','兄弟Curtis', '兄弟May', '兄弟Ngai', '兄弟Norman', '兄弟Sam', 'Ronald', 'Tammy'];
     selectedNames: string[] = [];
 
     constructor(
@@ -153,7 +153,11 @@ export class SchedulesComponent {
 
     getEventColor(event: Event): string {
         for (let name of this.selectedNames) {
-            if (event.participants.includes(name)) {
+            let isBro = name.startsWith('兄弟');
+            let isSis = name.startsWith('姊妹');
+            if (event.participants.includes(name)
+                || (isBro && (event.participants.includes('所有兄弟') || event.participants.includes('所有兄弟姊妹')))
+                || (isSis && (event.participants.includes('所有姊妹') || event.participants.includes('所有兄弟姊妹')))) {
                 return '#ffc688';
             }
         }
