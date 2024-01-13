@@ -75,10 +75,13 @@
                                 <mat-grid-tile class="placeholder-tile" colspan="1"></mat-grid-tile>
                             }
                         }
-                        {{ scrollToEvent() }}
                     }
                 }
             </mat-grid-list>
         </div>
     </div>
 </div>
+
+<button mat-fab color="primary scroll-btn" (click)="scrollToCurrentEvent()">
+    <i class="fas fa-history"></i>
+</button>

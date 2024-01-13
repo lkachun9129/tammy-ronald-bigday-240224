@@ -1,5 +1,6 @@
 import { CommonModule, ViewportScroller } from '@angular/common';
 import { Component } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -30,7 +31,7 @@ export interface Session {
 @Component({
     selector: 'app-schedules',
     standalone: true,
-    imports: [CommonModule, LuxonDateFormatPipe, MatCheckboxModule, MatDialogModule, MatExpansionModule, MatFormFieldModule, MatGridListModule, MatMenuModule, MatSelectModule],
+    imports: [CommonModule, LuxonDateFormatPipe, MatButtonModule, MatCheckboxModule, MatDialogModule, MatExpansionModule, MatFormFieldModule, MatGridListModule, MatMenuModule, MatSelectModule],
     templateUrl: './schedules.component.html',
     styleUrl: './schedules.component.sass'
 })
@@ -208,7 +209,7 @@ export class SchedulesComponent {
         });
     }
 
-    scrollToEvent() {
+    scrollToCurrentEvent() {
         let currentDateTime = DateTime.now();
         for (let session of this.sessions) {
             if (session.dateTime >= currentDateTime.plus({ minute: -45 })) {
