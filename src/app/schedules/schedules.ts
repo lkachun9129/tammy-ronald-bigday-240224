@@ -379,7 +379,7 @@ export const schedules: EventInput[] = [
         remarks:[]
     },{
         startDateTime:'24/2 06:00',
-        duration:60,
+        duration:15,
         description:`集合@香港遨凱酒店`,
         venue:'Room 10',
         participants:['Ronald','所有兄弟','車手'],
@@ -387,7 +387,7 @@ export const schedules: EventInput[] = [
         remarks:['泊車後通知車位號碼']
     },{
         startDateTime:'24/2 06:00',
-        duration:60,
+        duration:15,
         description:`交早餐比姊妹`,
         venue:'Room 11',
         participants:['兄弟X','姊妹X'],
@@ -452,13 +452,11 @@ export const schedules: EventInput[] = [
     },{
         startDateTime:'24/2 08:00',
         duration:45,
-        description:`化妝
-    1) Ronald媽
-    2) Ronald妹`,
+        description:`Ronald家人化妝`,
         venue:'Room 10',
         participants:['Ronald家人'],
         gears:['Ronald家人襟花'],
-        remarks:[]
+        remarks:['1) Ronald媽','2) Ronald妹']
     },{
         startDateTime:'24/2 08:30',
         duration:30,
