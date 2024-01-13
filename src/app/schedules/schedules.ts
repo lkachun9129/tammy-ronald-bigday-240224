@@ -300,7 +300,7 @@ export const schedules: EventInput[] = [
     },{
         startDateTime:'24/2 19:45',
         duration:15,
-        description:`Match in`,
+        description:`March in`,
         venue:'囍雲軒',
         participants:[],
         gears:['證婚花球','花瓣'],
@@ -483,14 +483,12 @@ export const schedules: EventInput[] = [
         remarks:['1) 兩家人不能碰面']
     },{
         startDateTime:'24/2 09:00',
-        duration:0,
-        description:`準備入門物資
-    1) 斟茶物資
-    2) 湯圓`,
+        duration:15,
+        description:`準備入門物資`,
         venue:'Room 11',
         participants:['所有兄弟姊妹'],
         gears:['湯圓','紅紙碗 + 匙羹'],
-        remarks:[]
+        remarks:['1) 斟茶物資','2) 湯圓']
     },{
         startDateTime:'24/2 09:30',
         duration:75,
@@ -501,7 +499,7 @@ export const schedules: EventInput[] = [
         remarks:[]
     },{
         startDateTime:'24/2 09:30',
-        duration:0,
+        duration:15,
         description:`新郎換裝`,
         venue:'Room 11',
         participants:['Ronald'],

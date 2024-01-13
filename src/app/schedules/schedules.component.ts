@@ -12,7 +12,13 @@ import { Event, EventInput, schedules } from './schedules';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
 import { EventDetailsDialog } from '../event-details-dialog/event-details-dialog.component';
 
+export enum SessionType {
+    Date = 0,
+    DateTime = 1
+}
+
 export interface Session {
+    type: SessionType;
     dateTime: DateTime;
     events: Event[];
     parallelEventCount: number;
@@ -27,6 +33,8 @@ export interface Session {
     styleUrl: './schedules.component.sass'
 })
 export class SchedulesComponent {
+
+    readonly SessionType = SessionType;
 
     private _scheduleStartDateTime: DateTime = DateTime.fromFormat('2024-02-23 13:00', 'yyyy-LL-dd HH:mm');
     private _scheduleEndDateTime: DateTime = DateTime.fromFormat('2024-02-25 00:15', 'yyyy-LL-dd HH:mm');
@@ -58,13 +66,26 @@ export class SchedulesComponent {
 
         let sessionCount: number = this._scheduleEndDateTime.diff(this._scheduleStartDateTime).as('minutes') / 15;
 
+        let previousDate: DateTime = DateTime.fromFormat('1970-01-01', 'yyyy-LL-dd');
         for (let i = 0; i < sessionCount; ++i) {
             let session = {
+                type: SessionType.DateTime,
                 dateTime: this._scheduleStartDateTime.plus({ minute: i * 15 }),
                 events: [],
                 parallelEventCount: 0,
                 avalibilityMap: []
             };
+            if (!session.dateTime.hasSame(previousDate, 'day')) {
+                let session = {
+                    type: SessionType.Date,
+                    dateTime: this._scheduleStartDateTime.plus({ minute: i * 15 }),
+                    events: [],
+                    parallelEventCount: 0,
+                    avalibilityMap: []
+                };
+                previousDate = session.dateTime;
+                this.sessions.push(session);
+            }
             this.sessions.push(session);
         }
 
@@ -83,7 +104,7 @@ export class SchedulesComponent {
                 remarks: eventInput.remarks,
                 color: '#EEEEEE'
             };
-            let idx = this.sessions.findIndex((session) => session.dateTime.equals(event.startDateTime));
+            let idx = this.sessions.findIndex((session) => session.dateTime.equals(event.startDateTime) && session.type == SessionType.DateTime);
             let currentSession = this.sessions[idx];
             currentSession.events.push(event);
             currentSession.parallelEventCount++;
@@ -108,6 +129,7 @@ export class SchedulesComponent {
             }).forEach(eventProcessor);
 
             // process unrelated events later
+
             schedules.filter(x => {
                 for (let name of this.selectedNames) {
                     if (x.participants.includes(name)) {

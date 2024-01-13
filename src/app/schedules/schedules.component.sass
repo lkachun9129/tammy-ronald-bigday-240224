@@ -21,11 +21,12 @@ button[mat-menu-item] i
 .schedule-container
     display: flex
 .datetime-col
-    width: 80px !important
+    width: 50px !important
     font-size: 0.7em
 .event-col
-    width: calc(100% - 80px)
+    width: calc(100% - 50px)
     overflow-x: scroll
+    overflow-y: hidden
 .event-scroll-wrapper
     position: relative
 
@@ -42,5 +43,10 @@ button[mat-menu-item] i
     font-size: 0.8em
     color: #555555
     i
-        margin-left: 5px
-        margin-right: 5px
+        width: 16px
+        text-align: center
+        margin: 1px 5px
+        font-size: 1em
+
+.placeholder-tile
+    border: 1px solid #eeeeee
