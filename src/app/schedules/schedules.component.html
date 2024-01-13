@@ -3,14 +3,14 @@
         <div mat-icon-button [matMenuTriggerFor]="menu">
             <i class="fas fa-ellipsis-v"></i>
         </div>
-        <h1>Schedules</h1>
+        <h1>Schedule</h1>
     </div>
     <mat-menu #menu="matMenu">
-        <button mat-menu-item>
+        <button mat-menu-item (click)="onMenuButtonClicked('schedule')">
             <i class="fas fa-calendar-alt"></i>
             <span>Schedule</span>
         </button>
-        <button mat-menu-item>
+        <button mat-menu-item (click)="onMenuButtonClicked('gears')">
             <i class="fas fa-box-open"></i>
             <span>Gears</span>
         </button>

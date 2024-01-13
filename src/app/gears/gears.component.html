@@ -1,0 +1,38 @@
+<div class="sticky-header">
+    <div class="header">
+        <div mat-icon-button [matMenuTriggerFor]="menu">
+            <i class="fas fa-ellipsis-v"></i>
+        </div>
+        <h1>Gears</h1>
+    </div>
+    <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="onMenuButtonClicked('schedule')">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Schedule</span>
+        </button>
+        <button mat-menu-item (click)="onMenuButtonClicked('gears')">
+            <i class="fas fa-box-open"></i>
+            <span>Gears</span>
+        </button>
+        <!-- <button mat-menu-item>
+        <mat-icon>notifications_off</mat-icon>
+        <span>Decoration</span>
+        </button> -->
+    </mat-menu>
+
+    @for (package of packages; track package) {
+        <mat-expansion-panel class="package-panel" hideToggle [expanded]="isExpanded(package.box)">
+            <mat-expansion-panel-header [style.background]="package.color">
+                <mat-panel-title><strong>{{package.box}}</strong></mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="filter-panel-container">
+                <p>{{package.description}}</p>
+                <ol>
+                    @for (item of package.items; track item) { 
+                        <li>{{item}}</li>
+                    }
+                </ol>
+            </div>
+        </mat-expansion-panel>
+    }
+</div>

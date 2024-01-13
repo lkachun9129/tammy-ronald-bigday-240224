@@ -5,7 +5,11 @@
     <p>Gears:</p>
     <ul>
         @for (gear of data.gears; track gear) {
-            <li>{{gear}}</li>
+            @if (gear.description == '--') {
+                <li><span class="box-pill" [style.background]="gear.color"><strong>{{gear.box}}</strong></span>{{gear.description}}</li>
+            } @else {
+                <li><span class="box-pill" [style.background]="gear.color" (click)="onBoxClicked(gear.box)"><strong>{{gear.box}}</strong></span>{{gear.description}}</li>
+            }
         }
     </ul>
     <p>Participants:</p>

@@ -8,9 +8,12 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
-import { Event, EventInput, schedules } from './schedules';
+import { Event, EventInput, Gear } from '../models';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
 import { EventDetailsDialog } from '../event-details-dialog/event-details-dialog.component';
+import { Router } from '@angular/router';
+import { AppData } from '../data';
+import { flatMap, mergeMap } from 'rxjs';
 
 export enum SessionType {
     Date = 0,
@@ -41,6 +44,7 @@ export class SchedulesComponent {
 
     private _maxParallelEventCount: number = 0;
     private _showRelatedFirst: boolean = false;
+    private _gearMap: { [key: string]: Gear } = {};
 
     ready: boolean = false;
 
@@ -53,12 +57,27 @@ export class SchedulesComponent {
     names: string[] = ['姊妹Christy','姊妹Janet','姊妹Kapo','姊妹Nicole','姊妹Winglam','兄弟Curtis', '兄弟May', '兄弟Ngai', '兄弟Norman', '兄弟Sam', 'Ronald', 'Tammy'];
     selectedNames: string[] = [];
 
+
     constructor(
-        public dialog: MatDialog
+        private readonly _router: Router,
+        private readonly _dialog: MatDialog
     ) {
+        this.loadGearMap();
         this.loadSchedules();
 
         this.ready = true;
+    }
+
+    private loadGearMap(): void {
+        AppData.gears.forEach(g => {
+            g.items.forEach(i => {
+                this._gearMap[i] = {
+                    description: i,
+                    box: g.box,
+                    color: g.color
+                };
+            });
+        });
     }
 
     private loadSchedules(): void {
@@ -100,10 +119,22 @@ export class SchedulesComponent {
                 description: eventInput.description,
                 venue: eventInput.venue == '0' ? '--' : eventInput.venue,
                 participants: eventInput.participants,
-                gears: eventInput.gears,
+                gears: eventInput.gears.map(x => {
+                    if (this._gearMap[x]) {
+                        return this._gearMap[x];
+                    } else {
+                        return {
+                            description: x,
+                            color: '#dddddd',
+                            box: '--'
+                        };
+                    }
+                }),
                 remarks: eventInput.remarks,
                 color: '#EEEEEE'
             };
+
+
             let idx = this.sessions.findIndex((session) => session.dateTime.equals(event.startDateTime) && session.type == SessionType.DateTime);
             let currentSession = this.sessions[idx];
             currentSession.events.push(event);
@@ -119,7 +150,7 @@ export class SchedulesComponent {
 
         if (this._showRelatedFirst) {
             // process related events first
-            schedules.filter(x => {
+            AppData.schedules.filter(x => {
                 for (let name of this.selectedNames) {
                     if (x.participants.includes(name)) {
                         return true;
@@ -130,7 +161,7 @@ export class SchedulesComponent {
 
             // process unrelated events later
 
-            schedules.filter(x => {
+            AppData.schedules.filter(x => {
                 for (let name of this.selectedNames) {
                     if (x.participants.includes(name)) {
                         return false;
@@ -139,9 +170,13 @@ export class SchedulesComponent {
                 return true;
             }).forEach(eventProcessor);
         } else {
-            schedules.forEach(eventProcessor);
+            AppData.schedules.forEach(eventProcessor);
         }
 
+    }
+
+    onMenuButtonClicked(route: string) {
+        this._router.navigate([`/${route}`]);
     }
 
     onShowRelatedOnlyChanged(checked: boolean) {
@@ -165,7 +200,7 @@ export class SchedulesComponent {
     }
 
     showEventDetails(event: Event) {
-        this.dialog.open(EventDetailsDialog, {
+        this._dialog.open(EventDetailsDialog, {
             data: event,
             height: '65vh',
             width: 'calc(100% - 50px)',
