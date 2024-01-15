@@ -53,7 +53,7 @@
         </mat-grid-list>
     </div>
     <div class="event-col">
-        <div class="event-scroll-wrapper" [style.width]="(maxParallelEventCount * 220) + 'px'">
+        <div class="event-scroll-wrapper" [style.width]="gridWidth">
             <mat-grid-list [cols]="maxParallelEventCount" rowHeight="70px" gutterSize="5px">
                 @for (session of sessions; track session) {
                     @for (event of session.events; track event) {

@@ -1,3 +1,4 @@
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { CommonModule, ViewportScroller } from '@angular/common';
 import { Component, EventEmitter } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,13 +11,13 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
 import { DateTime } from 'luxon';
+import { filter, mergeAll, windowTime } from 'rxjs';
 import { AppData } from '../data';
 import { EventDetailsDialog } from '../event-details-dialog/event-details-dialog.component';
+import { EventEditDialog } from '../event-edit-dialog/event-edit-dialog.component';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
 import { Event, EventEditForm, EventInput, Gear, Session, SessionType } from '../models';
-import { EventEditDialog } from '../event-edit-dialog/event-edit-dialog.component';
 import { ValuesOf } from '../types';
-import { filter, mergeAll, windowTime } from 'rxjs';
 
 @Component({
     selector: 'app-schedules',
@@ -52,24 +53,29 @@ export class SchedulesComponent {
     names: string[] = ['姊妹Christy','姊妹Janet','姊妹Kapo','姊妹Nicole','姊妹Winglam','兄弟Curtis', '兄弟May', '兄弟Ngai', '兄弟Norman', '兄弟Sam', 'Ronald', 'Tammy'];
     selectedNames: string[] = [];
 
+    get gridWidth(): string {
+        return this._breakpointObserver.isMatched(`(min-width: ${this.maxParallelEventCount * 220}px)`) ? 'calc(100% - 50px)' : (this.maxParallelEventCount * 220) + 'px';
+    }
 
     constructor(
         private readonly _router: Router,
         private readonly _dialog: MatDialog,
-        private readonly _viewerportScroller: ViewportScroller
+        private readonly _viewerportScroller: ViewportScroller,
+        private readonly _breakpointObserver: BreakpointObserver
     ) {
         this.loadGearMap();
         this.loadSchedules();
 
         this.ready = true;
 
+        // setup event to enable edit mode
         this._editModeEvent.pipe(
             windowTime(2000),
             mergeAll(),
             filter((value, index) => index + 1 >= 10)
         ).subscribe(() => {
             this.editMode = true;
-        })
+        });
     }
 
     private loadGearMap(): void {
