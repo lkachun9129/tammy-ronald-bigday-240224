@@ -59,7 +59,7 @@
                     @for (event of session.events; track event) {
                         <mat-grid-tile [rowspan]="event.sessionCount" colspan="1" [style.background]="getEventColor(event)">
                             @if (editMode) {
-                                <div class="event-container" (click)="event.showActions = true">
+                                <div class="event-container" (click)="previousHighlightedEvent && previousHighlightedEvent.showActions = false; event.showActions = true; previousHighlightedEvent = event;">
                                     <div class="event-desc">{{event.description}}</div>
                                     <div class="event-venue"><i class="fas fa-map-marker-alt"></i>{{event.venue}}</div>
                                     <div class="event-duration"><i class="fas fa-regular fa-clock"></i>{{event.duration}}mins</div>

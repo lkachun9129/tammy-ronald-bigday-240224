@@ -41,6 +41,7 @@ export class SchedulesComponent {
     editMode: boolean = false;
     ready: boolean = false;
     scrolledToEvent: boolean = false;
+    previousHighlightedEvent: Event = null;
 
     get maxParallelEventCount(): number {
         return this._maxParallelEventCount;
@@ -350,5 +351,6 @@ export class SchedulesComponent {
 
     exitEditMode() {
         this.editMode = false;
+        this.previousHighlightedEvent && (this.previousHighlightedEvent.showActions = false);
     }
 }
