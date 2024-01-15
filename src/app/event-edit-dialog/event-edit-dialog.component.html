@@ -1,0 +1,92 @@
+@if (form.value.newEvent) {
+    <h1 mat-dialog-title>Add Event</h1>
+} @else {
+    <h1 mat-dialog-title>Edit Event</h1>
+}
+<mat-dialog-content class="main-content">
+    <form [formGroup]="form">
+        <div class="form-group">
+            <mat-checkbox class="example-margin" formControlName="highPriority">
+                Higher Priority Event
+            </mat-checkbox>
+            <mat-form-field subscriptSizing="dynamic" class="input-desc">
+                <mat-label>Description</mat-label>
+                <input matInput formControlName="description">
+            </mat-form-field>
+            <div class="form-row-group">
+                <mat-form-field subscriptSizing="dynamic">
+                    <mat-label>Start Time</mat-label>
+                    <mat-select formControlName="startSession">
+                        @for (session of data.sessions; track session) {
+                            <mat-option [value]="session">{{session.dateTime | luxonDateFormat: 'd/L HH:mm'}}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field subscriptSizing="dynamic">
+                    <mat-label>Duration</mat-label>
+                    <mat-select formControlName="duration">
+                        @for (duration of durations; track duration) {
+                            <mat-option [value]="duration">{{duration}}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+
+                <p>Time: {{formData.startSession?.dateTime | luxonDateFormat: 'd/L'}} {{formData.startSession?.dateTime | luxonDateFormat: 'HH:mm'}} - {{ formData.startSession?.dateTime?.plus({ minute: formData.duration }) | luxonDateFormat: 'HH:mm' }}</p>
+
+            </div>
+
+            <mat-form-field subscriptSizing="dynamic">
+                <mat-label>Venue</mat-label>
+                <input matInput formControlName="venue">
+            </mat-form-field>
+
+            <mat-form-field class="input-gears" subscriptSizing="dynamic">
+                <mat-label>Gears</mat-label>
+                <mat-chip-grid #gearChipGrid aria-label="Gears">
+                    @for (gear of formData.gears; track gear) {
+                        <mat-chip-row (removed)="removeGear(gear)">
+                            {{gear}}
+                            <button matChipRemove [attr.aria-label]="'remove ' + gear">
+                                <mat-icon>cancel</mat-icon>
+                            </button>
+                        </mat-chip-row>
+                    }
+                </mat-chip-grid>
+                <input placeholder="Add Gear" #participantInput [formControl]="gearCtrl" [matChipInputFor]="gearChipGrid"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes" (matChipInputTokenEnd)="addGear($event)" />
+            </mat-form-field>
+
+            <mat-form-field class="input-participants" subscriptSizing="dynamic">
+                <mat-label>Participants</mat-label>
+                <mat-chip-grid #participantChipGrid aria-label="Participants">
+                    @for (participant of formData.participants; track participant) {
+                        <mat-chip-row (removed)="removeParticipant(participant)">
+                            {{participant}}
+                            <button matChipRemove [attr.aria-label]="'remove ' + participant">
+                                <mat-icon>cancel</mat-icon>
+                            </button>
+                        </mat-chip-row>
+                    }
+                </mat-chip-grid>
+                <input placeholder="Add Participant" #participantInput [formControl]="participantCtrl"
+                    [matChipInputFor]="participantChipGrid" [matAutocomplete]="participantAutoComplete"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes" (matChipInputTokenEnd)="addParticipant($event)" />
+                <mat-autocomplete #participantAutoComplete="matAutocomplete" (optionSelected)="onParticipantSelected($event)">
+                    @for (participant of filteredParticipants | async; track participant) {
+                        <mat-option [value]="participant">{{participant}}</mat-option>
+                    }
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <mat-form-field class="input-remarks">
+                <mat-label>Remarks</mat-label>
+                <textarea matInput cdkTextareaAutosize formControlName="remarks"></textarea>
+            </mat-form-field>
+        </div>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button (click)="onCancelClicked()">Cancel</button>
+    <button mat-button [mat-dialog-close]="form.value" cdkFocusInitial>Save</button>
+</mat-dialog-actions>

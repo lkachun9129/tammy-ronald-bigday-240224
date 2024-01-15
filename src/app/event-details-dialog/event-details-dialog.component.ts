@@ -1,4 +1,4 @@
-import { Component, Inject, Self } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { Event } from '../models';

@@ -19,11 +19,7 @@
         }
     </ul>
     <p>Remarks:</p>
-    <ul>
-        @for (line of data.remarks; track line) {
-        <li>{{line}}</li>
-        }
-    </ul>
+    <p class="remarks">{{data.remarks}}</p>
 </mat-dialog-content>
 <mat-dialog-actions>
     <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Close</button>

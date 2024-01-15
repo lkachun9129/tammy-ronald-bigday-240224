@@ -1,5 +1,5 @@
 import { CommonModule, ViewportScroller } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, EventEmitter } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -13,20 +13,10 @@ import { DateTime } from 'luxon';
 import { AppData } from '../data';
 import { EventDetailsDialog } from '../event-details-dialog/event-details-dialog.component';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
-import { Event, EventInput, Gear } from '../models';
-
-export enum SessionType {
-    Date = 0,
-    DateTime = 1
-}
-
-export interface Session {
-    type: SessionType;
-    dateTime: DateTime;
-    events: Event[];
-    parallelEventCount: number;
-    avalibilityMap: number[];   // 0=free, 1=current, 2=previous
-}
+import { Event, EventEditForm, EventInput, Gear, Session, SessionType } from '../models';
+import { EventEditDialog } from '../event-edit-dialog/event-edit-dialog.component';
+import { ValuesOf } from '../types';
+import { filter, mergeAll, windowTime } from 'rxjs';
 
 @Component({
     selector: 'app-schedules',
@@ -46,6 +36,9 @@ export class SchedulesComponent {
     private _showRelatedFirst: boolean = false;
     private _gearMap: { [key: string]: Gear } = {};
 
+    private _editModeEvent: EventEmitter<never> = new EventEmitter<never>();
+
+    editMode: boolean = false;
     ready: boolean = false;
     scrolledToEvent: boolean = false;
 
@@ -68,6 +61,14 @@ export class SchedulesComponent {
         this.loadSchedules();
 
         this.ready = true;
+
+        this._editModeEvent.pipe(
+            windowTime(2000),
+            mergeAll(),
+            filter((value, index) => index + 1 >= 10)
+        ).subscribe(() => {
+            this.editMode = true;
+        })
     }
 
     private loadGearMap(): void {
@@ -122,18 +123,15 @@ export class SchedulesComponent {
                 venue: eventInput.venue == '0' ? '--' : eventInput.venue,
                 participants: eventInput.participants,
                 gears: eventInput.gears.map(x => {
-                    if (this._gearMap[x]) {
-                        return this._gearMap[x];
-                    } else {
-                        return {
-                            description: x,
-                            color: '#dddddd',
-                            box: '--'
-                        };
-                    }
+                    return this._gearMap[x] || {
+                        description: x,
+                        color: '#dddddd',
+                        box: '--'
+                    };
                 }),
                 remarks: eventInput.remarks,
-                color: '#EEEEEE'
+                color: '#EEEEEE',
+                showActions: false
             };
 
 
@@ -209,6 +207,133 @@ export class SchedulesComponent {
         });
     }
 
+    addEvent() {
+        const dialogRef = this._dialog.open(EventEditDialog, {
+            data: {
+                event: null,
+                sessions: this.sessions,
+                gearMap: this._gearMap
+            },
+            height: '65vh',
+            width: 'calc(100% - 50px)',
+        });
+
+        dialogRef.afterClosed().subscribe((formValue: ValuesOf<EventEditForm>) => {
+            if (!formValue) {
+                return;
+            }
+
+            let updatedEvent: Event = this.getEvent(formValue);
+
+            let updatedSessionIdx = this.sessions.findIndex(x => x.dateTime.equals(updatedEvent.startDateTime));
+            let updatedSession = this.sessions[updatedSessionIdx];
+
+            // update event session count of updated session
+            for (let s = updatedSessionIdx; s < updatedSessionIdx + updatedEvent.sessionCount; ++s) {
+                this.sessions[s].parallelEventCount++;
+            }
+
+            if (formValue.highPriority) {
+                updatedSession.events.splice(0, 0, updatedEvent);
+            } else {
+                updatedSession.events.push(updatedEvent);
+            }
+
+            // update max paraellel event count
+            this._maxParallelEventCount = 0;
+            this.sessions.forEach(x => {
+                this._maxParallelEventCount = Math.max(this._maxParallelEventCount, x.parallelEventCount);
+            });
+        });
+    }
+
+    private getEvent(formValue: ValuesOf<EventEditForm>): Event {
+        let updatedEvent: Event = {
+            description: formValue.description ? formValue.description : '',
+            venue: formValue.venue ? formValue.venue : '',
+            startDateTime: formValue.startSession ? formValue.startSession?.dateTime.plus({ minute: 0 }) : DateTime.now(),
+            endDateTime: formValue.startSession ? formValue.startSession?.dateTime.plus({ minute: formValue.duration }) : DateTime.now(),
+            duration: formValue.duration ? formValue.duration : 0,
+            participants: formValue.participants ? formValue.participants : [],
+            gears: formValue.gears ? formValue.gears.map(x => {
+                return this._gearMap[x] || {
+                    description: x,
+                    color: '#dddddd',
+                    box: '--'
+                }
+            }) : [],
+            remarks: formValue.remarks ? formValue.remarks : '',
+
+            sessionCount: formValue.duration / 15,
+            color: '',
+            showActions: false
+        }
+
+        updatedEvent.color = this.getEventColor(updatedEvent);
+
+        return updatedEvent;
+    }
+
+    editEvent(event: Event) {
+        const dialogRef = this._dialog.open(EventEditDialog, {
+            data: {
+                event: event,
+                sessions: this.sessions,
+                gearMap: this._gearMap
+            },
+            height: '65vh',
+            width: 'calc(100% - 50px)',
+        });
+
+        dialogRef.afterClosed().subscribe((formValue: ValuesOf<EventEditForm>) => {
+            if (!formValue) {
+                return;
+            }
+
+            let updatedEvent: Event = this.getEvent(formValue);
+
+            let previousSessionIdx = this.sessions.findIndex(x => x.dateTime.equals(event.startDateTime));
+            let previousSession = this.sessions[previousSessionIdx];
+
+            let updatedSessionIdx = this.sessions.findIndex(x => x.dateTime.equals(updatedEvent.startDateTime));
+            let updatedSession = this.sessions[updatedSessionIdx];
+
+            // remove event session count from previous session
+            for (let s = previousSessionIdx; s < previousSessionIdx + event.sessionCount; ++s) {
+                this.sessions[s].parallelEventCount--;
+            }
+
+            // update event session count of updated session
+            for (let s = updatedSessionIdx; s < updatedSessionIdx + updatedEvent.sessionCount; ++s) {
+                this.sessions[s].parallelEventCount++;
+            }
+
+            // remove the previous event
+            previousSession.events.splice(previousSession.events.indexOf(event), 1);
+
+            if (updatedEvent.startDateTime.equals(event.startDateTime)) {
+                if (formValue.highPriority) {
+                    // insert the updated event at the beginning
+                    previousSession.events.splice(0, 0, updatedEvent);
+                } else {
+                    // insert the updated event at the same position
+                    previousSession.events.splice(previousSessionIdx, 0, updatedEvent);
+                }
+            // event updated to a new session
+            } else if (formValue.highPriority) {
+                updatedSession.events.splice(0, 0, updatedEvent);
+            } else {
+                updatedSession.events.push(updatedEvent);
+            }
+
+            // update max paraellel event count
+            this._maxParallelEventCount = 0;
+            this.sessions.forEach(x => {
+                this._maxParallelEventCount = Math.max(this._maxParallelEventCount, x.parallelEventCount);
+            });
+        });
+    }
+
     scrollToCurrentEvent() {
         let currentDateTime = DateTime.now();
         for (let session of this.sessions) {
@@ -217,5 +342,13 @@ export class SchedulesComponent {
                 break;
             }
         }
+    }
+
+    triggerEditMode() {
+        this._editModeEvent.emit();
+    }
+
+    exitEditMode() {
+        this.editMode = false;
     }
 }

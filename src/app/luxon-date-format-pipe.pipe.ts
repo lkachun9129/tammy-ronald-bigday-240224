@@ -7,7 +7,7 @@ import { DateTime } from 'luxon';
 })
 export class LuxonDateFormatPipe implements PipeTransform {
 
-  transform(value: DateTime, ...args: any[]): string {
+  transform(value: DateTime | undefined, ...args: any[]): string {
     if (!value) {
       return '';
     }
