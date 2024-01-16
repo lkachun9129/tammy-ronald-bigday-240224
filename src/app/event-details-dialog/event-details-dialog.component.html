@@ -5,10 +5,10 @@
     <p>Gears:</p>
     <ul>
         @for (gear of data.gears; track gear) {
-            @if (gear.description == '--') {
-                <li><span class="box-pill" [style.background]="gear.color"><strong>{{gear.box}}</strong></span>{{gear.description}}</li>
+            @if (locateGear(gear).id == '--') {
+                <li><span class="box-pill" [style.background]="locateGear(gear).color"><strong>{{locateGear(gear).id}}</strong></span>{{gear}}</li>
             } @else {
-                <li><span class="box-pill" [style.background]="gear.color" (click)="onBoxClicked(gear.box)"><strong>{{gear.box}}</strong></span>{{gear.description}}</li>
+                <li><span class="box-pill" [style.background]="locateGear(gear).color" (click)="onBoxClicked(locateGear(gear).id)"><strong>{{locateGear(gear).id}}</strong></span>{{gear}}</li>
             }
         }
     </ul>

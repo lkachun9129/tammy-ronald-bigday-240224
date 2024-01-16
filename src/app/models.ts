@@ -33,7 +33,7 @@ export interface Event {
     description: string;
     venue: string;
     participants: string[];
-    gears: Gear[];
+    gears: string[];
     remarks: string;
 
     color: string;

@@ -1,9 +1,10 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { Event } from '../models';
+import { Box, Event } from '../models';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
 import { Router, RouterModule } from '@angular/router';
+import { AppService } from '../app.service';
 
 @Component({
     selector: 'app-event-details-dialog',
@@ -23,6 +24,7 @@ import { Router, RouterModule } from '@angular/router';
 export class EventDetailsDialog {
 
     constructor(
+        private readonly _appService: AppService,
         private readonly _router: Router,
         public dialogRef: MatDialogRef<EventDetailsDialog>,
         @Inject(MAT_DIALOG_DATA) public data: Event
@@ -31,5 +33,12 @@ export class EventDetailsDialog {
     onBoxClicked(box: string) {
         this.dialogRef.close();
         this._router.navigate(['/gears', box]);
+    }
+
+    locateGear(item: string): { id: string, color: string } {
+        return this._appService.locateGear(item) || {
+            id: '--',
+            color: '#dddddd'
+        };
     }
 }

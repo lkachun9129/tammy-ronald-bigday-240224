@@ -152,19 +152,7 @@ export class SchedulesComponent {
             endDateTime: formValue.startSession ? formValue.startSession?.dateTime.plus({ minute: formValue.duration }) : DateTime.now(),
             duration: formValue.duration ? formValue.duration : 0,
             participants: formValue.participants ? formValue.participants : [],
-            gears: formValue.gears ? formValue.gears.map(x => {
-                let gear: Gear = {
-                    description: x,
-                    color: '#acb9ca',
-                    box: '--'
-                }
-                let box = this._appService.locateGear(x);
-                if (box) {
-                    gear.color = box.color;
-                    gear.box = box.id;
-                }
-                return gear;
-            }) : [],
+            gears: formValue.gears ? formValue.gears : [],
             remarks: formValue.remarks ? formValue.remarks : '',
 
             sessionCount: formValue.duration / 15,

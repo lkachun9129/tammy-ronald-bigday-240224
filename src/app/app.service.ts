@@ -16,7 +16,7 @@ export class AppService {
     boxes: Box[] = [];
 
     notPackedItems: string[] = [];
-    deletedItems: string[] = [];
+    deletedItems: string[] = ['testing'];
 
     gearMap: GearMap = {};
 
@@ -100,13 +100,7 @@ export class AppService {
                 description: eventInput.description,
                 venue: eventInput.venue == '0' ? '--' : eventInput.venue,
                 participants: eventInput.participants,
-                gears: eventInput.gears.map(x => {
-                    return this.gearMap[x] || {
-                        description: x,
-                        color: '#dddddd',
-                        box: '--'
-                    };
-                }),
+                gears: eventInput.gears,
                 remarks: eventInput.remarks,
                 color: '#EEEEEE',
                 showActions: false
@@ -145,7 +139,7 @@ export class AppService {
     }
 
     updateDeletedGear(): void {
-        let gears = this.sessions.flatMap(s => s.events.flatMap(e => e.gears.map(g => g.description)));
+        let gears = this.sessions.flatMap(s => s.events.flatMap(e => e.gears));
 
         let deletedItems: string[] = [];
 

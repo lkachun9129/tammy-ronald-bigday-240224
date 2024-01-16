@@ -78,7 +78,7 @@ export class EventEditDialog {
         };
 
         value.participants.push(...event.participants);
-        value.gears.push(...event.gears.map(x => x.description));
+        value.gears.push(...event.gears);
 
         return value;
     }
