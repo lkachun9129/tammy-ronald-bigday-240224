@@ -422,7 +422,7 @@ export const AppData: AppData =
         description: `花車佈置`,
         venue: '0',
         participants: ['Ronald', '所有兄弟', '車手'],
-        gears: ['花車deco	', '花環', '車花x4', '皺紋膠紙', '結婚公仔', '索帶', '剪刀'],
+        gears: ['花車deco', '花環', '車花x4', '皺紋膠紙', '結婚公仔', '索帶', '剪刀'],
         remarks: ''
     }, {
         startDateTime: '24/2 07:15',
@@ -580,7 +580,7 @@ export const AppData: AppData =
         id: 'A2',
         description: '',
         color: '#edc244',
-        items: ['花車deco	', '花環', '車花x4', '結婚公仔', '紅米綠豆']
+        items: ['花車deco', '花環', '車花x4', '結婚公仔', '紅米綠豆']
     }, {
         id: 'B',
         description: 'Room 11 -> 囍雲軒 -> Home',

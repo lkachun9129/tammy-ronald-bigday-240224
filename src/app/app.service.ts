@@ -15,7 +15,8 @@ export class AppService {
 
     boxes: Box[] = [];
 
-    unpackedItems: string[] = [];
+    notPackedItems: string[] = [];
+    deletedItems: string[] = [];
 
     gearMap: GearMap = {};
 
@@ -136,8 +137,41 @@ export class AppService {
         if (locatedBoxes) {
             return locatedBoxes;
         } else {
-            this.unpackedItems.push(item);
+            if (!this.notPackedItems.includes(item)) {
+                this.notPackedItems.push(item);
+            }
             return null;
         }
+    }
+
+    updateDeletedGear(): void {
+        let gears = this.sessions.flatMap(s => s.events.flatMap(e => e.gears.map(g => g.description)));
+
+        let deletedItems: string[] = [];
+
+        this.boxes.forEach(b => {
+            let missingIdx: number[] = [];
+            b.items.forEach((i, idx) => {
+                if (!gears.includes(i)) {
+                    missingIdx.push(idx);
+                }
+            });
+
+            missingIdx.reverse().forEach(idx => {
+                deletedItems.push(...b.items.splice(idx, 1));
+            });
+        });
+
+        let stillDeletedItems = this.deletedItems.filter(i => !gears.includes(i));
+
+        this.deletedItems.length = 0;
+        this.deletedItems.push(...stillDeletedItems, ...deletedItems);
+    }
+
+    updateMaxParallelEventCount(): void {
+        this.maxParallelEventCount = 0;
+        this.sessions.forEach(x => {
+            this.maxParallelEventCount = Math.max(this.maxParallelEventCount, x.parallelEventCount);
+        });
     }
 }

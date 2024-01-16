@@ -9,8 +9,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AppData } from '../data';
 import { Box } from '../models';
+import { AppService } from '../app.service';
 
 @Component({
     selector: 'app-gears',
@@ -22,10 +22,19 @@ import { Box } from '../models';
 export class GearsComponent {
 
     get boxes(): Box[] {
-        return AppData.boxes;
+        return this._appService.boxes;
+    }
+
+    get notPackedItems(): string[] {
+        return this._appService.notPackedItems;
+    }
+
+    get deletedItems(): string[] {
+        return this._appService.deletedItems;
     }
 
     constructor(
+        private readonly _appService: AppService,
         private readonly _router: Router,
         private readonly _activatedroute: ActivatedRoute
     ) { }

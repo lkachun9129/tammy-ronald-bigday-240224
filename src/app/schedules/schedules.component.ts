@@ -16,7 +16,7 @@ import { AppService } from '../app.service';
 import { EventDetailsDialog } from '../event-details-dialog/event-details-dialog.component';
 import { EventEditDialog } from '../event-edit-dialog/event-edit-dialog.component';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
-import { Event, EventEditForm, Session, SessionType } from '../models';
+import { Event, EventEditForm, Gear, Session, SessionType } from '../models';
 import { GearMap, ValuesOf } from '../types';
 
 @Component({
@@ -143,6 +143,40 @@ export class SchedulesComponent {
         return !this._breakpointObserver.isMatched(`(min-width: 550px)`);
     }
 
+    private getEvent(formValue: ValuesOf<EventEditForm>): Event {
+        let updatedEvent: Event = {
+            order: -1,
+            description: formValue.description ? formValue.description : '',
+            venue: formValue.venue ? formValue.venue : '',
+            startDateTime: formValue.startSession ? formValue.startSession?.dateTime.plus({ minute: 0 }) : DateTime.now(),
+            endDateTime: formValue.startSession ? formValue.startSession?.dateTime.plus({ minute: formValue.duration }) : DateTime.now(),
+            duration: formValue.duration ? formValue.duration : 0,
+            participants: formValue.participants ? formValue.participants : [],
+            gears: formValue.gears ? formValue.gears.map(x => {
+                let gear: Gear = {
+                    description: x,
+                    color: '#acb9ca',
+                    box: '--'
+                }
+                let box = this._appService.locateGear(x);
+                if (box) {
+                    gear.color = box.color;
+                    gear.box = box.id;
+                }
+                return gear;
+            }) : [],
+            remarks: formValue.remarks ? formValue.remarks : '',
+
+            sessionCount: formValue.duration / 15,
+            color: '',
+            showActions: false
+        }
+
+        updatedEvent.color = this.getEventColor(updatedEvent);
+
+        return updatedEvent;
+    }
+
     addEvent() {
         const dialogRef = this._dialog.open(EventEditDialog, {
             data: {
@@ -178,40 +212,9 @@ export class SchedulesComponent {
                 updatedSession.events.push(updatedEvent);
             }
 
-            // update max paraellel event count
-            this.maxParallelEventCount = 0;
-            this.sessions.forEach(x => {
-                this.maxParallelEventCount = Math.max(this.maxParallelEventCount, x.parallelEventCount);
-            });
+            this._appService.updateMaxParallelEventCount();
+            this._appService.updateDeletedGear();
         });
-    }
-
-    private getEvent(formValue: ValuesOf<EventEditForm>): Event {
-        let updatedEvent: Event = {
-            order: -1,
-            description: formValue.description ? formValue.description : '',
-            venue: formValue.venue ? formValue.venue : '',
-            startDateTime: formValue.startSession ? formValue.startSession?.dateTime.plus({ minute: 0 }) : DateTime.now(),
-            endDateTime: formValue.startSession ? formValue.startSession?.dateTime.plus({ minute: formValue.duration }) : DateTime.now(),
-            duration: formValue.duration ? formValue.duration : 0,
-            participants: formValue.participants ? formValue.participants : [],
-            gears: formValue.gears ? formValue.gears.map(x => {
-                return this._gearMap[x] || {
-                    description: x,
-                    color: '#dddddd',
-                    box: '--'
-                }
-            }) : [],
-            remarks: formValue.remarks ? formValue.remarks : '',
-
-            sessionCount: formValue.duration / 15,
-            color: '',
-            showActions: false
-        }
-
-        updatedEvent.color = this.getEventColor(updatedEvent);
-
-        return updatedEvent;
     }
 
     editEvent(event: Event) {
@@ -277,11 +280,8 @@ export class SchedulesComponent {
                 });
             }
 
-            // update max paraellel event count
-            this.maxParallelEventCount = 0;
-            this.sessions.forEach(x => {
-                this.maxParallelEventCount = Math.max(this.maxParallelEventCount, x.parallelEventCount);
-            });
+            this._appService.updateMaxParallelEventCount();
+            this._appService.updateDeletedGear();
         });
     }
 

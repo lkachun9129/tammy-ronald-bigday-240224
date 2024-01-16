@@ -37,3 +37,29 @@
         </div>
     </mat-expansion-panel>
 }
+
+<mat-expansion-panel class="package-panel" hideToggle>
+    <mat-expansion-panel-header [style.background]="'#acb9ca'">
+        <mat-panel-title><strong>未分類物品</strong></mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="filter-panel-container">
+        <ol>
+            @for (item of notPackedItems; track item) {
+                <li>{{item}}</li>
+            }
+        </ol>
+    </div>
+</mat-expansion-panel>
+
+<mat-expansion-panel class="package-panel" hideToggle>
+    <mat-expansion-panel-header [style.background]="'#000000'">
+        <mat-panel-title [style.color]="'#ffffff'"><i class="far fa-trash-alt" [style.margin-right]="'5px'"></i><strong>資源回收筒</strong></mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="filter-panel-container">
+        <ol>
+            @for (item of deletedItems; track item) {
+            <li>{{item}}</li>
+            }
+        </ol>
+    </div>
+</mat-expansion-panel>
