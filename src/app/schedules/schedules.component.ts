@@ -18,6 +18,7 @@ import { EventEditDialog } from '../event-edit-dialog/event-edit-dialog.componen
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
 import { Event, EventEditForm, Gear, Session, SessionType } from '../models';
 import { GearMap, ValuesOf } from '../types';
+import { ConfirmationDialog } from '../confirmation-dialog/confirmation-dialog.component';
 
 @Component({
     selector: 'app-schedules',
@@ -271,6 +272,25 @@ export class SchedulesComponent {
             this._appService.updateMaxParallelEventCount();
             this._appService.updateDeletedGear();
         });
+    }
+
+    removeEvent(event: Event, session: Session) {
+        this._dialog.open(ConfirmationDialog).afterClosed().subscribe((confirmDelete: boolean) => {
+            if (confirmDelete) {
+                let idx = session.events.indexOf(event);
+                if (idx >= 0) {
+                    session.events.splice(idx, 1);
+
+                    let sessionIdx = this.sessions.indexOf(session);
+                    for (let s = 0; s < event.sessionCount; ++s) {
+                        this.sessions[sessionIdx + s].parallelEventCount--;
+                    }
+
+                    this._appService.updateMaxParallelEventCount();
+                    this._appService.updateDeletedGear();
+                }
+            }
+        })
     }
 
     scrollToCurrentEvent() {
