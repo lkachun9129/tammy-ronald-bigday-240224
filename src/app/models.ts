@@ -25,6 +25,7 @@ export interface EventInput {
 }
 
 export interface Event {
+    order: number;
     startDateTime: DateTime;
     endDateTime: DateTime;
     duration: number;

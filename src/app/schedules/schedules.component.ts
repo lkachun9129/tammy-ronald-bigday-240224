@@ -122,6 +122,7 @@ export class SchedulesComponent {
             let startDateTime = DateTime.fromFormat(eventInput.startDateTime, 'dd/L HH:mm');
             let endDateTime = startDateTime.plus({ minute: eventInput.duration });
             let event: Event = {
+                order: -1, // to be set in the next step
                 startDateTime: startDateTime,
                 endDateTime: endDateTime,
                 duration: eventInput.duration,
@@ -144,6 +145,7 @@ export class SchedulesComponent {
 
             let idx = this.sessions.findIndex((session) => session.dateTime.equals(event.startDateTime) && session.type == SessionType.DateTime);
             let currentSession = this.sessions[idx];
+            event.order = currentSession.events.length;
             currentSession.events.push(event);
             currentSession.parallelEventCount++;
 
@@ -189,21 +191,42 @@ export class SchedulesComponent {
     onShowRelatedOnlyChanged(checked: boolean) {
         this.ready = false;
         this._showRelatedFirst = checked;
-        this.loadSchedules();
+        this.rearrangeEvents();
         this.ready = true;
     }
 
-    getEventColor(event: Event): string {
+    private rearrangeEvents() {
+        this.sessions.forEach(session => {
+            session.events.sort((a, b) => {
+                if (this._showRelatedFirst) {
+                    let aRelated = this.isRelatedEvent(a);
+                    let bRelated = this.isRelatedEvent(b);
+
+                    return aRelated && bRelated ? 1 :
+                            (aRelated && !bRelated ? -1 : 1);
+                } else {
+                    return a.order - b.order;
+                }
+            });
+        });
+    }
+
+    private isRelatedEvent(event: Event): boolean {
         for (let name of this.selectedNames) {
             let isBro = name.startsWith('兄弟');
             let isSis = name.startsWith('姊妹');
             if (event.participants.includes(name)
                 || (isBro && (event.participants.includes('所有兄弟') || event.participants.includes('所有兄弟姊妹')))
                 || (isSis && (event.participants.includes('所有姊妹') || event.participants.includes('所有兄弟姊妹')))) {
-                return '#ffc688';
+                return true;
             }
         }
-        return '#eeeeee';
+
+        return false;
+    }
+
+    getEventColor(event: Event): string {
+        return this.isRelatedEvent(event) ? '#ffc688' : '#eeeeee';
     }
 
     showEventDetails(event: Event) {
@@ -235,6 +258,8 @@ export class SchedulesComponent {
             let updatedSessionIdx = this.sessions.findIndex(x => x.dateTime.equals(updatedEvent.startDateTime));
             let updatedSession = this.sessions[updatedSessionIdx];
 
+            updatedEvent.order = updatedSession.events.length;
+
             // update event session count of updated session
             for (let s = updatedSessionIdx; s < updatedSessionIdx + updatedEvent.sessionCount; ++s) {
                 this.sessions[s].parallelEventCount++;
@@ -256,6 +281,7 @@ export class SchedulesComponent {
 
     private getEvent(formValue: ValuesOf<EventEditForm>): Event {
         let updatedEvent: Event = {
+            order: -1,
             description: formValue.description ? formValue.description : '',
             venue: formValue.venue ? formValue.venue : '',
             startDateTime: formValue.startSession ? formValue.startSession?.dateTime.plus({ minute: 0 }) : DateTime.now(),
@@ -328,11 +354,19 @@ export class SchedulesComponent {
                     // insert the updated event at the same position
                     previousSession.events.splice(previousEventIdx, 0, updatedEvent);
                 }
-            // event updated to a new session
-            } else if (formValue.highPriority) {
-                updatedSession.events.splice(0, 0, updatedEvent);
+                previousSession.events.forEach((e, idx) => {
+                    e.order = idx;
+                });
             } else {
-                updatedSession.events.push(updatedEvent);
+                // event updated to a new session
+                if (formValue.highPriority) {
+                    updatedSession.events.splice(0, 0, updatedEvent);
+                } else {
+                    updatedSession.events.push(updatedEvent);
+                }
+                updatedSession.events.forEach((e, idx) => {
+                    e.order = idx;
+                });
             }
 
             // update max paraellel event count
