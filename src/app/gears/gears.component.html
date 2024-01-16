@@ -22,15 +22,15 @@
 </div>
 
 
-@for (package of packages; track package) {
-    <mat-expansion-panel class="package-panel" hideToggle [expanded]="isExpanded(package.box)">
-        <mat-expansion-panel-header [style.background]="package.color">
-            <mat-panel-title><strong>{{package.box}}</strong></mat-panel-title>
+@for (box of boxes; track box) {
+    <mat-expansion-panel class="package-panel" hideToggle [expanded]="isExpanded(box.id)">
+        <mat-expansion-panel-header [style.background]="box.color">
+            <mat-panel-title><strong>{{box.id}}</strong></mat-panel-title>
         </mat-expansion-panel-header>
         <div class="filter-panel-container">
-            <p>{{package.description}}</p>
+            <p>{{box.description}}</p>
             <ol>
-                @for (item of package.items; track item) { 
+                @for (item of box.items; track item) { 
                     <li>{{item}}</li>
                 }
             </ol>

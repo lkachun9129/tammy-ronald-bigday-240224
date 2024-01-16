@@ -40,8 +40,8 @@ export interface Event {
     showActions: boolean;
 }
 
-export interface Package {
-    box: string;
+export interface Box {
+    id: string;
     description: string;
     color: string;
     items: string[];

@@ -1,4 +1,5 @@
 import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
+import { Gear } from './models';
 
 type ɵRawValue<T extends AbstractControl | undefined> =
     T extends FormControl<infer R> ?
@@ -13,3 +14,5 @@ type ɵRawValue<T extends AbstractControl | undefined> =
  * Derive the form value definition from a form model
  */
 export type ValuesOf<T extends { [K in keyof T]?: AbstractControl<any>; }> = Partial<{ [K in keyof T]: ɵRawValue<T[K]>; }>;
+
+export type GearMap = { [key: string]: Gear };

@@ -12,12 +12,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
 import { DateTime } from 'luxon';
 import { filter, mergeAll, windowTime } from 'rxjs';
-import { AppData } from '../data';
+import { AppService } from '../app.service';
 import { EventDetailsDialog } from '../event-details-dialog/event-details-dialog.component';
 import { EventEditDialog } from '../event-edit-dialog/event-edit-dialog.component';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
-import { Event, EventEditForm, EventInput, Gear, Session, SessionType } from '../models';
-import { ValuesOf } from '../types';
+import { Event, EventEditForm, Session, SessionType } from '../models';
+import { GearMap, ValuesOf } from '../types';
 
 @Component({
     selector: 'app-schedules',
@@ -30,12 +30,11 @@ export class SchedulesComponent {
 
     readonly SessionType = SessionType;
 
-    private _scheduleStartDateTime: DateTime = DateTime.fromFormat('2024-02-23 13:00', 'yyyy-LL-dd HH:mm');
-    private _scheduleEndDateTime: DateTime = DateTime.fromFormat('2024-02-25 00:15', 'yyyy-LL-dd HH:mm');
-
-    private _maxParallelEventCount: number = 0;
     private _showRelatedFirst: boolean = false;
-    private _gearMap: { [key: string]: Gear } = {};
+
+    private get _gearMap(): GearMap {
+        return this._appService.gearMap;
+    }
 
     private _editModeEvent: EventEmitter<never> = new EventEmitter<never>();
 
@@ -45,12 +44,21 @@ export class SchedulesComponent {
     previousHighlightedEvent: Event = null;
 
     get maxParallelEventCount(): number {
-        return this._maxParallelEventCount;
+        return this._appService.maxParallelEventCount;
     }
 
-    sessions: Session[] = [];
+    set maxParallelEventCount(count: number) {
+        this._appService.maxParallelEventCount = count;
+    }
 
-    names: string[] = ['姊妹Christy','姊妹Janet','姊妹Kapo','姊妹Nicole','姊妹Winglam','兄弟Curtis', '兄弟May', '兄弟Ngai', '兄弟Norman', '兄弟Sam', 'Ronald', 'Tammy'];
+    get sessions(): Session[] {
+        return this._appService.sessions;
+    }
+
+    get names(): string[] {
+        return this._appService.names;
+    }
+
     selectedNames: string[] = [];
 
     get gridWidth(): string {
@@ -58,130 +66,22 @@ export class SchedulesComponent {
     }
 
     constructor(
+        private readonly _appService: AppService,
         private readonly _router: Router,
         private readonly _dialog: MatDialog,
         private readonly _viewerportScroller: ViewportScroller,
         private readonly _breakpointObserver: BreakpointObserver
     ) {
-        this.loadGearMap();
-        this.loadSchedules();
-
         this.ready = true;
 
         // setup event to enable edit mode
         this._editModeEvent.pipe(
             windowTime(2000),
             mergeAll(),
-            filter((value, index) => index + 1 >= 10)
+            filter((_, index) => index + 1 >= 10)
         ).subscribe(() => {
             this.editMode = true;
         });
-    }
-
-    private loadGearMap(): void {
-        AppData.gears.forEach(g => {
-            g.items.forEach(i => {
-                this._gearMap[i] = {
-                    description: i,
-                    box: g.box,
-                    color: g.color
-                };
-            });
-        });
-    }
-
-    private loadSchedules(): void {
-        this.sessions.length = 0;
-
-        let sessionCount: number = this._scheduleEndDateTime.diff(this._scheduleStartDateTime).as('minutes') / 15;
-
-        let previousDate: DateTime = DateTime.fromFormat('1970-01-01', 'yyyy-LL-dd');
-        for (let i = 0; i < sessionCount; ++i) {
-            let session = {
-                type: SessionType.DateTime,
-                dateTime: this._scheduleStartDateTime.plus({ minute: i * 15 }),
-                events: [],
-                parallelEventCount: 0,
-                avalibilityMap: []
-            };
-            if (!session.dateTime.hasSame(previousDate, 'day')) {
-                let session = {
-                    type: SessionType.Date,
-                    dateTime: this._scheduleStartDateTime.plus({ minute: i * 15 }),
-                    events: [],
-                    parallelEventCount: 0,
-                    avalibilityMap: []
-                };
-                previousDate = session.dateTime;
-                this.sessions.push(session);
-            }
-            this.sessions.push(session);
-        }
-
-        let eventProcessor = (eventInput: EventInput) => {
-            let startDateTime = DateTime.fromFormat(eventInput.startDateTime, 'dd/L HH:mm');
-            let endDateTime = startDateTime.plus({ minute: eventInput.duration });
-            let event: Event = {
-                order: -1, // to be set in the next step
-                startDateTime: startDateTime,
-                endDateTime: endDateTime,
-                duration: eventInput.duration,
-                sessionCount: eventInput.duration / 15,
-                description: eventInput.description,
-                venue: eventInput.venue == '0' ? '--' : eventInput.venue,
-                participants: eventInput.participants,
-                gears: eventInput.gears.map(x => {
-                    return this._gearMap[x] || {
-                        description: x,
-                        color: '#dddddd',
-                        box: '--'
-                    };
-                }),
-                remarks: eventInput.remarks,
-                color: '#EEEEEE',
-                showActions: false
-            };
-
-
-            let idx = this.sessions.findIndex((session) => session.dateTime.equals(event.startDateTime) && session.type == SessionType.DateTime);
-            let currentSession = this.sessions[idx];
-            event.order = currentSession.events.length;
-            currentSession.events.push(event);
-            currentSession.parallelEventCount++;
-
-            // for events span across two sessions, increase event count for the next session
-            for (let c = 1; c < event.sessionCount; ++c) {
-                this.sessions[idx + c].parallelEventCount++;
-            }
-
-            this._maxParallelEventCount = Math.max(currentSession.parallelEventCount, this._maxParallelEventCount);
-        };
-
-        if (this._showRelatedFirst) {
-            // process related events first
-            AppData.schedules.filter(x => {
-                for (let name of this.selectedNames) {
-                    if (x.participants.includes(name)) {
-                        return true;
-                    }
-                }
-                return false;
-            }).forEach(eventProcessor);
-
-            // process unrelated events later
-
-            AppData.schedules.filter(x => {
-                for (let name of this.selectedNames) {
-                    if (x.participants.includes(name)) {
-                        return false;
-                    }
-                }
-                return true;
-            }).forEach(eventProcessor);
-        } else {
-            AppData.schedules.forEach(eventProcessor);
-        }
-
     }
 
     onMenuButtonClicked(route: string) {
@@ -189,6 +89,7 @@ export class SchedulesComponent {
     }
 
     onShowRelatedOnlyChanged(checked: boolean) {
+        // need to hide and show the grid to refresh the color
         this.ready = false;
         this._showRelatedFirst = checked;
         this.rearrangeEvents();
@@ -278,9 +179,9 @@ export class SchedulesComponent {
             }
 
             // update max paraellel event count
-            this._maxParallelEventCount = 0;
+            this.maxParallelEventCount = 0;
             this.sessions.forEach(x => {
-                this._maxParallelEventCount = Math.max(this._maxParallelEventCount, x.parallelEventCount);
+                this.maxParallelEventCount = Math.max(this.maxParallelEventCount, x.parallelEventCount);
             });
         });
     }
@@ -377,9 +278,9 @@ export class SchedulesComponent {
             }
 
             // update max paraellel event count
-            this._maxParallelEventCount = 0;
+            this.maxParallelEventCount = 0;
             this.sessions.forEach(x => {
-                this._maxParallelEventCount = Math.max(this._maxParallelEventCount, x.parallelEventCount);
+                this.maxParallelEventCount = Math.max(this.maxParallelEventCount, x.parallelEventCount);
             });
         });
     }

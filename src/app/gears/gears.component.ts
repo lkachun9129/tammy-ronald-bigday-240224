@@ -10,7 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppData } from '../data';
-import { Package } from '../models';
+import { Box } from '../models';
 
 @Component({
     selector: 'app-gears',
@@ -21,8 +21,8 @@ import { Package } from '../models';
 })
 export class GearsComponent {
 
-    get packages(): Package[] {
-        return AppData.gears;
+    get boxes(): Box[] {
+        return AppData.boxes;
     }
 
     constructor(

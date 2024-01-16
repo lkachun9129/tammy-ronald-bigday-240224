@@ -1,8 +1,8 @@
-import { EventInput, Package } from "./models";
+import { EventInput, Box } from "./models";
 
 export interface AppData {
     schedules: EventInput[];
-    gears: Package[];
+    boxes: Box[];
 }
 
 export const AppData: AppData =
@@ -571,43 +571,43 @@ export const AppData: AppData =
         gears: ['回禮禮物', '人名人情表', '原子筆', 'USB for相歌片', '嘉賓心心簽名板', '簽名布', '簽名板筆', '鐵牌 Welcome board', '人情利是封', '相簿x2', '油畫x1', 'Foamboard相x12', 'backdrop名牌', '玫瑰花', '剪刀', '紅白酒'],
         remarks: '以下物品可早一天交給囍雲軒\n1) 回禮禮物\n2) 囍雲軒訂單'
     }],
-    gears: [{
-        box: 'A1',
+    boxes: [{
+        id: 'A1',
         description: 'Room 11 -> Home',
         color: '#a52418',
         items: ['上頭套裝 (女家)', '電子龍鳳燭 (女家)', '紅頭繩 (女家)', '龍鳳對餅 (女家)', '紅枱布 (女家)', '碌柚葉', '扁柏', '對聯']
     }, {
-        box: 'A2',
+        id: 'A2',
         description: '',
         color: '#edc244',
         items: ['花車deco	', '花環', '車花x4', '結婚公仔', '紅米綠豆']
     }, {
-        box: 'B',
+        id: 'B',
         description: 'Room 11 -> 囍雲軒 -> Home',
         color: '#a3cd63',
         items: ['玩新郎道具', '敬茶cushion', '敬茶葉杯及水壺', '紅紙杯', '蓮子+ 紅棗+ 茶葉', '斟茶金器表', '金器回收袋', '腳架', '紅紙碗 + 匙羹']
     }, {
-        box: 'D',
+        id: 'D',
         description: 'sky100 -> 囍雲軒 -> Home',
         color: '#68aeea',
         items: ['[律師袋]', '花瓣', '人情回收袋', '人名人情表', '簽名布', '簽名板筆', '鐵牌 Welcome board', '人情利是封', '相簿x2', '玫瑰花', '[律師袋] 2枝swarovski筆', '[律師袋] 戒指 (一盒兩戒)', '[律師袋] 結婚證書套']
     }, {
-        box: 'S',
+        id: 'S',
         description: '文具袋',
         color: '#cfcece',
         items: ['原子筆', '房間deco', '膠紙', 'bluetack (可能唔夠實)', '皺紋膠紙', '索帶', '剪刀']
     }, {
-        box: 'GIP A',
+        id: 'GIP A',
         description: 'Room 11 -> Room 10 -> Home',
         color: '#af5f29',
         items: ['紅睡衣 (女家)', '紅拖鞋 (女家)', '紅底衫褲 (女家)', '姊妹手花', 'Tammy媽媽晚裝', 'Tammy媽媽晚裝鞋', 'Tammy家人襟花', '裙褂', '褂鞋', '馬褂', '新郎襟花', '兄弟襟花', 'Ronald家人襟花']
     }, {
-        box: 'GIP B',
+        id: 'GIP B',
         description: 'Room 10 -> Room 11 -> sky100 -> 囍雲軒 -> Home',
         color: '#b19030',
         items: ['外拍婚紗', 'Nude bra', '新娘鞋', '抹身布', 'Tammy外套', '證婚婚紗', '頭紗', '敬酒禮服', 'Match in禮服', 'bow tie', '皮鞋', '黑襪', '敬酒晚裝']
     }, {
-        box: 'X',
+        id: 'X',
         description: '獨立包裝物品',
         color: '#eadafc',
         items: ['金器', '攔門紅色花球 (同心結+ 紅絲帶）', '紅傘', '證婚花球', '入門花球', '開門利是', '回禮禮物', 'USB for相歌片', '嘉賓心心簽名板', '油畫x1', '[律師袋] HKID正本 x4', 'Foamboard相x12', 'backdrop名牌', '紅白酒', '兄弟利是']
