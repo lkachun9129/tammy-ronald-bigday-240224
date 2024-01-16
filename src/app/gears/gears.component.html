@@ -3,7 +3,7 @@
         <div mat-icon-button [matMenuTriggerFor]="menu">
             <i class="fas fa-ellipsis-v"></i>
         </div>
-        <h1>Gears</h1>
+        <h1 (click)="triggerEditMode()">Gears</h1>
     </div>
     <mat-menu #menu="matMenu">
         <button mat-menu-item (click)="onMenuButtonClicked('schedule')">
@@ -30,8 +30,10 @@
         <div class="filter-panel-container">
             <p>{{box.description}}</p>
             <ol>
-                @for (item of box.items; track item) { 
-                    <li>{{item}}</li>
+                @for (item of box.items; track item) {
+                    <li><button mat-stroked-button color="basic" (click)="editItem(item, box)">
+                        <i class="fas fa-edit"></i>
+                    </button>{{item}}</li>
                 }
             </ol>
         </div>
@@ -45,7 +47,9 @@
     <div class="filter-panel-container">
         <ol>
             @for (item of notPackedItems; track item) {
-                <li>{{item}}</li>
+                <li>{{item}}<button mat-stroked-button color="basic" (click)="editItem(item, null)">
+                    <i class="fas fa-edit"></i>
+                </button></li>
             }
         </ol>
     </div>
@@ -63,3 +67,9 @@
         </ol>
     </div>
 </mat-expansion-panel>
+
+@if (editMode) {
+<button mat-fab class="exit-btn" color="basic" (click)="exitEditMode()">
+    <i class="fas fa-sign-out-alt"></i>
+</button>
+}
