@@ -315,8 +315,10 @@ export class SchedulesComponent {
                 this.sessions[s].parallelEventCount++;
             }
 
+            let previousEventIdx = previousSession.events.indexOf(event);
+
             // remove the previous event
-            previousSession.events.splice(previousSession.events.indexOf(event), 1);
+            previousSession.events.splice(previousEventIdx, 1);
 
             if (updatedEvent.startDateTime.equals(event.startDateTime)) {
                 if (formValue.highPriority) {
@@ -324,7 +326,7 @@ export class SchedulesComponent {
                     previousSession.events.splice(0, 0, updatedEvent);
                 } else {
                     // insert the updated event at the same position
-                    previousSession.events.splice(previousSessionIdx, 0, updatedEvent);
+                    previousSession.events.splice(previousEventIdx, 0, updatedEvent);
                 }
             // event updated to a new session
             } else if (formValue.highPriority) {
