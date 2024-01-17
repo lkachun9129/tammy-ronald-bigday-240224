@@ -16,14 +16,28 @@ import { AppService } from '../app.service';
 import { EventDetailsDialog } from '../event-details-dialog/event-details-dialog.component';
 import { EventEditDialog } from '../event-edit-dialog/event-edit-dialog.component';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
-import { Event, EventEditForm, Gear, Session, SessionType } from '../models';
+import { Event, EventEditForm, Session, SessionType } from '../models';
 import { GearMap, ValuesOf } from '../types';
 import { ConfirmationDialog } from '../confirmation-dialog/confirmation-dialog.component';
+import { FireDatabaseModule } from '../fire-database-module/fire-database.module';
 
 @Component({
     selector: 'app-schedules',
     standalone: true,
-    imports: [CommonModule, LuxonDateFormatPipe, MatButtonModule, MatCheckboxModule, MatDialogModule, MatExpansionModule, MatFormFieldModule, MatGridListModule, MatMenuModule, MatSelectModule],
+    imports: [
+        CommonModule,
+        LuxonDateFormatPipe,
+
+        MatButtonModule,
+        MatCheckboxModule,
+        MatDialogModule,
+        MatExpansionModule,
+        MatFormFieldModule,
+        MatGridListModule,
+        MatMenuModule,
+        MatSelectModule,
+
+        FireDatabaseModule],
     templateUrl: './schedules.component.html',
     styleUrl: './schedules.component.sass'
 })
@@ -271,6 +285,8 @@ export class SchedulesComponent {
 
             this._appService.updateMaxParallelEventCount();
             this._appService.updateDeletedGear();
+
+            this._appService.save();
         });
     }
 

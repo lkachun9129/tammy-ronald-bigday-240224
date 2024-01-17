@@ -1,6 +1,46 @@
 import { FormControl } from "@angular/forms";
 import { DateTime } from "luxon";
 
+export type SnapshotMap = { [key: string]: DataSnapshot };
+
+export interface AppData {
+    snapshot: SnapshotMap
+}
+
+export interface DataSnapshot {
+    sessions: SessionSnapshot[];
+    boxes: Box[];
+    notPackedItems: string[];
+    deletedItems: string[];
+}
+
+export interface SessionSnapshot {
+    type: SessionType;
+    dateTime: LocalDateTime;
+    events: EventSnapshot[];
+    parallelEventCount: number;   // 0=free, 1=current, 2=previous
+}
+
+export interface EventSnapshot {
+    order: number;
+    startDateTime: LocalDateTime;
+    endDateTime: LocalDateTime;
+    duration: number;
+    sessionCount: number;
+    description: string;
+    venue: string;
+    participants: string[];
+    gears: string[];
+    remarks: string;
+}
+
+export interface Data {
+    sessions: Session[];
+    boxes: Box[];
+    notPackedItems: string[];
+    deletedItems: string[];
+}
+
 export enum SessionType {
     Date = 0,
     DateTime = 1
@@ -11,7 +51,6 @@ export interface Session {
     dateTime: DateTime;
     events: Event[];
     parallelEventCount: number;
-    avalibilityMap: number[];   // 0=free, 1=current, 2=previous
 }
 
 export interface EventInput {
@@ -64,3 +103,5 @@ export interface EventEditForm {
     remarks: FormControl<string>;
     highPriority: FormControl<boolean>;
 }
+
+export type LocalDateTime = number[];

@@ -1,22 +1,40 @@
 import { Injectable } from '@angular/core';
-import { Box, Event, EventInput, Session, SessionType } from './models';
-import { AppData } from './data';
-import { GearMap } from './types';
+import { AngularFireDatabase, SnapshotAction } from '@angular/fire/compat/database';
 import { DateTime } from 'luxon';
+import { AppData as AppDataOld } from './data';
+import { Box, Data, DataSnapshot, Event, EventInput, EventSnapshot, Session, SessionSnapshot, SessionType } from './models';
+import { GearMap } from './types';
+import { Utility } from './utility';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AppService {
 
+    private _appData: Data = {
+        sessions: [],
+        boxes: [],
+        notPackedItems: [],
+        deletedItems: []
+    };
+
     maxParallelEventCount: number = 0;
 
-    sessions: Session[] = [];
+    get sessions(): Session[] {
+        return this._appData.sessions;
+    }
 
-    boxes: Box[] = [];
+    get boxes(): Box[] {
+        return this._appData.boxes;
+    }
 
-    notPackedItems: string[] = [];
-    deletedItems: string[] = ['testing'];
+    get notPackedItems(): string[] {
+        return this._appData.notPackedItems;
+    }
+
+    get deletedItems(): string[] {
+        return this._appData.deletedItems;
+    }
 
     gearMap: GearMap = {};
 
@@ -38,18 +56,93 @@ export class AppService {
     private _scheduleStartDateTime: DateTime = DateTime.fromFormat('2024-02-23 13:00', 'yyyy-LL-dd HH:mm');
     private _scheduleEndDateTime: DateTime = DateTime.fromFormat('2024-02-25 00:15', 'yyyy-LL-dd HH:mm');
 
-    constructor() {
-        this.loadBoxes();
+    constructor(
+        private readonly _db: AngularFireDatabase
+    ) {
+        this._db.object('/appData/main')
+            .snapshotChanges()
+            .subscribe((snapshot: SnapshotAction<DataSnapshot>) => {
+                let dataSnapshot = snapshot.payload.val();
+                this._appData.sessions = dataSnapshot.sessions.map(s => {
+                    let session: Session = {
+                        type: s.type,
+                        dateTime: Utility.toDateTime(s.dateTime),
+                        events: s.events ? s.events.map(e => {
+                            let event: Event = {
+                                order: e.order,
+                                startDateTime: Utility.toDateTime(e.startDateTime),
+                                endDateTime: Utility.toDateTime(e.endDateTime),
+                                duration: e.duration,
+                                sessionCount: e.sessionCount,
+                                description: e.description,
+                                venue: e.venue,
+                                participants: e.participants ? e.participants : [],
+                                gears: e.gears ? e.gears : [],
+                                remarks: e.remarks,
+                                color: '#EEEEEE',
+                                showActions: false
+                            }
+                            return event;
+                        }): [],
+                        parallelEventCount: s.parallelEventCount
+                    };
+
+                    return session;
+                });
+
+                this.updateMaxParallelEventCount();
+            });
+
+
+        //this.loadBoxes();
         this.loadGearMap();
-        this.loadSchedules();
+        //this.loadSchedules();
+    }
+
+    save() {
+        let data: DataSnapshot = {
+            sessions: this.sessions.map(s => {
+                let session: SessionSnapshot = {
+                    type: s.type,
+                    dateTime: Utility.toLocalDateTime(s.dateTime),
+                    events: s.events.map(e => {
+                        let event: EventSnapshot = {
+                            order: e.order,
+                            startDateTime: Utility.toLocalDateTime(e.startDateTime),
+                            endDateTime: Utility.toLocalDateTime(e.endDateTime),
+                            duration: e.duration,
+                            sessionCount: e.sessionCount,
+                            description: e.description,
+                            venue: e.venue,
+                            participants: e.participants,
+                            gears: e.gears,
+                            remarks: e.remarks
+                        }
+                        return event;
+                    }),
+                    parallelEventCount: s.parallelEventCount
+                }
+
+                return session;
+            }),
+            boxes: this.boxes,
+            notPackedItems: this.notPackedItems,
+            deletedItems: this.deletedItems
+        }
+
+        this._db.object('/appData/main').set(data).then((value) => {
+            console.log(value);
+        }, (reason) => {
+            console.error(reason);
+        })
     }
 
     loadBoxes(): void {
-        this.boxes.push(...AppData.boxes);
+        this.boxes.push(...AppDataOld.boxes);
     }
 
     loadGearMap(): void {
-        AppData.boxes.forEach(b => {
+        AppDataOld.boxes.forEach(b => {
             b.items.forEach(i => {
                 this.gearMap[i] = {
                     description: i,
@@ -121,7 +214,7 @@ export class AppService {
             this.maxParallelEventCount = Math.max(currentSession.parallelEventCount, this.maxParallelEventCount);
         };
 
-        AppData.schedules.forEach(eventProcessor);
+        AppDataOld.schedules.forEach(eventProcessor);
 
     }
 
