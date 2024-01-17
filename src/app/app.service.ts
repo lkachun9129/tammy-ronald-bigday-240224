@@ -24,6 +24,8 @@ export class AppService {
         deletedItems: []
     };
 
+    private _committed: boolean = false;
+
     maxParallelEventCount: number = 0;
 
     get sessions(): Session[] {
@@ -96,6 +98,7 @@ export class AppService {
             .pipe(
                 mergeMap((snapshot: SnapshotAction<DataSnapshot>) => {
                     if (snapshot.payload.val()) {
+                        this._committed = true;
                         return of(snapshot);
                     } else {
                         return this._db.object(`/appData/main`).snapshotChanges()
@@ -148,9 +151,13 @@ export class AppService {
     }
 
     saveGearsToDatabase() {
-        this._db.object(`/appData/${this.dbSchema}/boxes`).set(this.boxes);
-        this._db.object(`/appData/${this.dbSchema}/notPackedItems`).set(this.notPackedItems);
-        this._db.object(`/appData/${this.dbSchema}/deletedItems`).set(this.deletedItems);
+        if (this._committed) {
+            this._db.object(`/appData/${this.dbSchema}/boxes`).set(this.boxes);
+            this._db.object(`/appData/${this.dbSchema}/notPackedItems`).set(this.notPackedItems);
+            this._db.object(`/appData/${this.dbSchema}/deletedItems`).set(this.deletedItems);
+        } else {
+            this.saveAllToDatabase();
+        }
     }
 
     saveAllToDatabase() {
@@ -188,7 +195,9 @@ export class AppService {
             console.log(value);
         }, (reason) => {
             console.error(reason);
-        })
+        });
+
+        this._committed = true;
     }
 
     /**
