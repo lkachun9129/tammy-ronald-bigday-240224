@@ -14,7 +14,7 @@
                 <input matInput formControlName="description">
             </mat-form-field>
             <div class="form-row-group">
-                <mat-form-field subscriptSizing="dynamic">
+                <mat-form-field subscriptSizing="dynamic" class="col-50">
                     <mat-label>Start Time</mat-label>
                     <mat-select formControlName="startSession">
                         @for (session of data.sessions; track session) {
@@ -23,7 +23,7 @@
                     </mat-select>
                 </mat-form-field>
 
-                <mat-form-field subscriptSizing="dynamic">
+                <mat-form-field subscriptSizing="dynamic" class="col-50">
                     <mat-label>Duration</mat-label>
                     <mat-select formControlName="duration">
                         @for (duration of durations; track duration) {
@@ -42,7 +42,7 @@
             </mat-form-field>
 
             <mat-form-field class="input-gears" subscriptSizing="dynamic">
-                <mat-label>Gears</mat-label>
+                <mat-label>Supplies</mat-label>
                 <mat-chip-grid #gearChipGrid aria-label="Gears">
                     @for (gear of formData.gears; track gear) {
                         <mat-chip-row (removed)="removeGear(gear)">

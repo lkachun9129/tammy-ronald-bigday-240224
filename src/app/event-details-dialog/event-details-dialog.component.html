@@ -1,8 +1,8 @@
 <h1 mat-dialog-title>{{data.description}}</h1>
 <mat-dialog-content class="main-content">
-    <p>Time: {{data.startDateTime | luxonDateFormat: 'HH:mm'}} - {{ data.endDateTime | luxonDateFormat: 'HH:mm' }}</p>
+    <p>Time: {{data.startDateTime | luxonDateFormat: 'd/L'}} {{data.startDateTime | luxonDateFormat: 'HH:mm'}} - {{ data.endDateTime | luxonDateFormat: 'HH:mm' }}</p>
     <p>Venue: {{data.venue }}</p>
-    <p>Gears:</p>
+    <p>Supplies:</p>
     <ul>
         @for (gear of data.gears; track gear) {
             @if (locateGear(gear).id == '--') {
