@@ -9,11 +9,11 @@ export const routes: Routes = [
         component: SchedulesComponent
     },
     {
-        path: 'gears/:schema/:box',
+        path: 'supplies/:schema/:box',
         component: GearsComponent
     },
     {
-        path: 'gears/:schema',
+        path: 'supplies/:schema',
         component: GearsComponent
     },
     {
