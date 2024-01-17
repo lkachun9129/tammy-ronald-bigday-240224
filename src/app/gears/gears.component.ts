@@ -1,25 +1,26 @@
+import {
+    CdkDrag,
+    CdkDragDrop,
+    CdkDropList,
+    moveItemInArray,
+    transferArrayItem
+} from '@angular/cdk/drag-drop';
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
-import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Box } from '../models';
-import { AppService } from '../app.service';
 import { filter, mergeAll, windowTime } from 'rxjs';
-import { MatButtonModule } from '@angular/material/button';
-import {
-    CdkDragDrop,
-    moveItemInArray,
-    transferArrayItem,
-    CdkDrag,
-    CdkDropList
-} from '@angular/cdk/drag-drop';
+import { AppService } from '../app.service';
 import { ConfirmationDialog } from '../confirmation-dialog/confirmation-dialog.component';
+import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
+import { Box } from '../models';
 
 @Component({
     selector: 'app-gears',
@@ -38,7 +39,7 @@ import { ConfirmationDialog } from '../confirmation-dialog/confirmation-dialog.c
         MatFormFieldModule,
         MatMenuModule,
         MatSelectModule,
-    
+
         ConfirmationDialog],
     templateUrl: './gears.component.html',
     styleUrl: './gears.component.sass'
@@ -62,6 +63,7 @@ export class GearsComponent {
     private _editModeEvent: EventEmitter<never> = new EventEmitter<never>();
 
     constructor(
+        private readonly _breakpointObserver: BreakpointObserver,
         private readonly _appService: AppService,
         private readonly _matDialog: MatDialog,
         private readonly _router: Router,
@@ -132,4 +134,9 @@ export class GearsComponent {
             );
         }
     }
+
+    useMobileLayout(): boolean {
+        return !this._breakpointObserver.isMatched(`(min-width: 550px)`);
+    }
+
 }

@@ -13,12 +13,12 @@ import { Router } from '@angular/router';
 import { DateTime } from 'luxon';
 import { filter, mergeAll, windowTime } from 'rxjs';
 import { AppService } from '../app.service';
+import { ConfirmationDialog } from '../confirmation-dialog/confirmation-dialog.component';
 import { EventDetailsDialog } from '../event-details-dialog/event-details-dialog.component';
 import { EventEditDialog } from '../event-edit-dialog/event-edit-dialog.component';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
 import { Event, EventEditForm, Session, SessionType } from '../models';
 import { GearMap, ValuesOf } from '../types';
-import { ConfirmationDialog } from '../confirmation-dialog/confirmation-dialog.component';
 import { FireDatabaseModule } from '../fire-database-module/fire-database.module';
 
 @Component({

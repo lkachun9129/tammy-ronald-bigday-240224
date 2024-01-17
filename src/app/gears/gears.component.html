@@ -37,7 +37,7 @@
         <div class="box-panel-container">
             <p>{{box.description}}</p>
             @for (item of box.items; track item; let index = $index) {
-                <div cdkDrag class="item"><div>{{index + 1}}</div><div>{{item}}</div></div>
+                <div cdkDrag class="item" [ngClass]="{ 'mobile': useMobileLayout() }"><div>{{index + 1}}</div><div>{{item}}</div></div>
             }
         </div>
     </mat-expansion-panel>
@@ -57,7 +57,7 @@
     <div class="box-panel-container">
         <p></p>
         @for (item of notPackedItems; track item; let index = $index) {
-            <div cdkDrag class="item"><div>{{index + 1}}</div><div>{{item}}</div></div>
+            <div cdkDrag class="item" [ngClass]="{ 'mobile': useMobileLayout() }"><div>{{index + 1}}</div><div>{{item}}</div></div>
         }
     </div>
 </mat-expansion-panel>
