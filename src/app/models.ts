@@ -1,6 +1,13 @@
 import { FormControl } from "@angular/forms";
 import { DateTime } from "luxon";
 
+export enum Schema {
+    Final = 'final',
+    Photography = 'photography',
+    MakeUp = 'makeup',
+    Draft = 'draft'
+}
+
 export type SnapshotMap = { [key: string]: DataSnapshot };
 
 export interface AppData {

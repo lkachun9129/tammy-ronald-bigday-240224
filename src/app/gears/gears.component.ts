@@ -69,8 +69,13 @@ export class GearsComponent {
         private readonly _appService: AppService,
         private readonly _matDialog: MatDialog,
         private readonly _router: Router,
-        private readonly _activatedroute: ActivatedRoute
+        private readonly _activatedRoute: ActivatedRoute
     ) {
+        // undefined schema
+        if (!this._appService.setSchema(this._activatedRoute.snapshot.paramMap.get('schema'))) {
+            this._router.navigate(['/']);
+        }
+
         // setup event to enable edit mode
         this._editModeEvent.pipe(
             windowTime(2000),
@@ -98,7 +103,7 @@ export class GearsComponent {
     }
 
     isExpanded(box: string): boolean {
-        return this._activatedroute.snapshot.paramMap.get('box') == box;
+        return this._activatedRoute.snapshot.paramMap.get('box') == box;
     }
 
     onMenuButtonClicked(route: string) {

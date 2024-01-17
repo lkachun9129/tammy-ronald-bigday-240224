@@ -9,7 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DateTime } from 'luxon';
 import { filter, mergeAll, windowTime } from 'rxjs';
 import { AppService } from '../app.service';
@@ -85,8 +85,14 @@ export class SchedulesComponent {
         private readonly _router: Router,
         private readonly _dialog: MatDialog,
         private readonly _viewerportScroller: ViewportScroller,
-        private readonly _breakpointObserver: BreakpointObserver
+        private readonly _breakpointObserver: BreakpointObserver,
+        private readonly _activatedRoute: ActivatedRoute
     ) {
+        // undefined schema
+        if (!this._appService.setSchema(this._activatedRoute.snapshot.paramMap.get('schema'))) {
+            this._router.navigate(['/']);
+        }
+
         this.ready = true;
 
         // setup event to enable edit mode

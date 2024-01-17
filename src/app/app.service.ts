@@ -2,14 +2,17 @@ import { Injectable } from '@angular/core';
 import { AngularFireDatabase, SnapshotAction } from '@angular/fire/compat/database';
 import { DateTime } from 'luxon';
 import { AppData as AppDataOld } from './data';
-import { Box, Data, DataSnapshot, Event, EventInput, EventSnapshot, Session, SessionSnapshot, SessionType } from './models';
+import { Box, Data, DataSnapshot, Event, EventInput, EventSnapshot, Schema, Session, SessionSnapshot, SessionType } from './models';
 import { GearMap } from './types';
 import { Utility } from './utility';
+import { map, mergeMap, of } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AppService {
+
+    private _schema: Schema = null;
 
     private _appData: Data = {
         sessions: [],
@@ -49,6 +52,8 @@ export class AppService {
         '兄弟Ngai',
         '兄弟Norman',
         '兄弟Sam',
+        '攝影師',
+        '化妝師',
         'Ronald',
         'Tammy'
     ];
@@ -58,9 +63,32 @@ export class AppService {
 
     constructor(
         private readonly _db: AngularFireDatabase
-    ) {
-        this._db.object('/appData/main')
+    ) { }
+
+    setSchema(name: string): boolean {
+        if (name == Schema.Final) {
+            this._schema = Schema.Final;
+        } else if (name == Schema.Photography) {
+            this._schema = Schema.Photography;
+        } else if (name == Schema.MakeUp) {
+            this._schema = Schema.MakeUp;
+        } else if (name == Schema.Draft) {
+            this._schema = Schema.Draft;
+        } else {
+            return false;
+        }
+
+        this._db.object(`/appData/${this._schema}`)
             .snapshotChanges()
+            .pipe(
+                mergeMap((snapshot: SnapshotAction<DataSnapshot>) => {
+                    if (snapshot.payload.val()) {
+                        return of(snapshot);
+                    } else {
+                        return this._db.object(`/appData/main`).snapshotChanges()
+                    }
+                })
+            )
             .subscribe((snapshot: SnapshotAction<DataSnapshot>) => {
                 let dataSnapshot = snapshot.payload.val();
                 this._appData.sessions = dataSnapshot.sessions.map(s => {
@@ -83,7 +111,7 @@ export class AppService {
                                 showActions: false
                             }
                             return event;
-                        }): [],
+                        }) : [],
                         parallelEventCount: s.parallelEventCount
                     };
 
@@ -95,18 +123,21 @@ export class AppService {
                 this._appData.deletedItems = dataSnapshot.deletedItems ? dataSnapshot.deletedItems : [];
 
                 this.updateMaxParallelEventCount();
+                this.loadGearMap();
             });
 
 
         //this.loadBoxes();
-        this.loadGearMap();
+        //this.loadGearMap();
         //this.loadSchedules();
+
+        return true;
     }
 
     saveGearsToDatabase() {
-        this._db.object('/appData/main/boxes').set(this.boxes);
-        this._db.object('/appData/main/notPackedItems').set(this.notPackedItems);
-        this._db.object('/appData/main/deletedItems').set(this.deletedItems);
+        this._db.object(`/appData/${this._schema}/boxes`).set(this.boxes);
+        this._db.object(`/appData/${this._schema}/notPackedItems`).set(this.notPackedItems);
+        this._db.object(`/appData/${this._schema}/deletedItems`).set(this.deletedItems);
     }
 
     saveAllToDatabase() {
@@ -140,19 +171,22 @@ export class AppService {
             deletedItems: this.deletedItems
         }
 
-        this._db.object('/appData/main').set(data).then((value) => {
+        this._db.object(`/appData/${this._schema}`).set(data).then((value) => {
             console.log(value);
         }, (reason) => {
             console.error(reason);
         })
     }
 
+    /**
+     * @deprecated
+     */
     loadBoxes(): void {
         this.boxes.push(...AppDataOld.boxes);
     }
 
     loadGearMap(): void {
-        AppDataOld.boxes.forEach(b => {
+        this.boxes.forEach(b => {
             b.items.forEach(i => {
                 this.gearMap[i] = {
                     description: i,
@@ -163,6 +197,9 @@ export class AppService {
         });
     }
 
+    /**
+     * @deprecated
+     */
     loadSchedules(): void {
         this.sessions.length = 0;
 

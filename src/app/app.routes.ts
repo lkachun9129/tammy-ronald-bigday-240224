@@ -5,15 +5,15 @@ import { LandingComponent } from './landing/landing.component';
 
 export const routes: Routes = [
     {
-        path: 'schedule',
+        path: 'schedule/:schema',
         component: SchedulesComponent
     },
     {
-        path: 'gears/:box',
+        path: 'gears/:schema/:box',
         component: GearsComponent
     },
     {
-        path: 'gears',
+        path: 'gears/:schema',
         component: GearsComponent
     },
     {
