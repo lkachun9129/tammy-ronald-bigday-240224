@@ -106,7 +106,8 @@ export class AppService {
                                     this._committed = true;
                                     return of(snapshot);
                                 } else {
-                                    return this._db.object(`/appData/main`).snapshotChanges()
+                                    // load data from schema 'draft'
+                                    return this._db.object(`/appData/draft`).snapshotChanges()
                                 }
                             }),
                             map((snapshot: SnapshotAction<DataSnapshot>) => {
