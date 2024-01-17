@@ -1,21 +1,26 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, SnapshotAction } from '@angular/fire/compat/database';
 import { DateTime, Interval } from 'luxon';
+import { Observable, map, mergeMap, of, throwError } from 'rxjs';
 import { AppData as AppDataOld } from './data';
-import { Box, Data, DataSnapshot, Event, EventInput, EventSnapshot, Schema, Session, SessionSnapshot, SessionType } from './models';
+import { Box, Data, DataSnapshot, Event, EventInput, EventSnapshot, SchemaDefinition, Session, SessionSnapshot, SessionType } from './models';
 import { GearMap } from './types';
 import { Utility } from './utility';
-import { map, mergeMap, of } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AppService {
 
-    private _dbSchema: Schema = null;
-    get dbSchema(): Schema {
-        return this._dbSchema;
+    private _schemaDefinition: SchemaDefinition = null;
+
+    get dbSchema(): string {
+        return this._schemaDefinition.name;
     };
+
+    get allowEdit(): boolean {
+        return this._schemaDefinition.editable;
+    }
 
     private _appData: Data = {
         sessions: [],
@@ -76,78 +81,77 @@ export class AppService {
         private readonly _db: AngularFireDatabase
     ) { }
 
-    setSchema(name: string): boolean {
-        if (name == Schema.Final) {
-            this._dbSchema = Schema.Final;
-        } else if (name == Schema.Photography) {
-            this._dbSchema = Schema.Photography;
-            this._scheduleStartDateTime = Utility.toDateTime([2024, 2, 24, 4, 0, 0]);
-            this._scheduleEndDateTime = Utility.toDateTime([2024, 2, 24, 23, 30, 0]);
-        } else if (name == Schema.MakeUp) {
-            this._dbSchema = Schema.MakeUp;
-            this._scheduleStartDateTime = Utility.toDateTime([2024, 2, 24, 3, 0, 0]);
-            this._scheduleEndDateTime = Utility.toDateTime([2024, 2, 24, 23, 30, 0]);
-        } else if (name == Schema.Draft) {
-            this._dbSchema = Schema.Draft;
-        } else {
-            return false;
-        }
-
-        this._db.object(`/appData/${this.dbSchema}`)
+    loadData(name: string): Observable<void> {
+        return this._db.object('/appData/schemas')
             .snapshotChanges()
             .pipe(
-                mergeMap((snapshot: SnapshotAction<DataSnapshot>) => {
-                    if (snapshot.payload.val()) {
-                        this._committed = true;
-                        return of(snapshot);
+                mergeMap((snapshot: SnapshotAction<SchemaDefinition[]>) => {
+                    let definitions: SchemaDefinition[] = snapshot.payload.val();
+
+                    let schemaDefinition = definitions.find(d => d.name == name);
+                    if (!schemaDefinition) {
+                        throwError(() => new Error('Schema not defined'));
                     } else {
-                        return this._db.object(`/appData/main`).snapshotChanges()
+                        this._schemaDefinition = schemaDefinition;
+                        this._scheduleStartDateTime = Utility.toDateTime(schemaDefinition.scheduleStartDateTime);
+                        this._scheduleEndDateTime = Utility.toDateTime(schemaDefinition.scheduleEndDateTime);
                     }
+
+
+                    return this._db.object(`/appData/${this.dbSchema}`)
+                        .snapshotChanges()
+                        .pipe(
+                            mergeMap((snapshot: SnapshotAction<DataSnapshot>) => {
+                                if (snapshot.payload.val()) {
+                                    this._committed = true;
+                                    return of(snapshot);
+                                } else {
+                                    return this._db.object(`/appData/main`).snapshotChanges()
+                                }
+                            }),
+                            map((snapshot: SnapshotAction<DataSnapshot>) => {
+                                let dataSnapshot = snapshot.payload.val();
+                                this._appData.sessions = dataSnapshot.sessions.map(s => {
+                                    let session: Session = {
+                                        type: s.type,
+                                        dateTime: Utility.toDateTime(s.dateTime),
+                                        events: s.events ? s.events.map(e => {
+                                            let event: Event = {
+                                                order: e.order,
+                                                startDateTime: Utility.toDateTime(e.startDateTime),
+                                                endDateTime: Utility.toDateTime(e.endDateTime),
+                                                duration: e.duration,
+                                                sessionCount: e.sessionCount,
+                                                description: e.description,
+                                                venue: e.venue,
+                                                participants: e.participants ? e.participants : [],
+                                                gears: e.gears ? e.gears : [],
+                                                remarks: e.remarks,
+                                                color: '#EEEEEE',
+                                                showActions: false
+                                            }
+                                            return event;
+                                        }) : [],
+                                        parallelEventCount: s.parallelEventCount
+                                    };
+
+                                    return session;
+                                });
+
+                                this._appData.boxes = dataSnapshot.boxes ? dataSnapshot.boxes : [];
+                                this._appData.notPackedItems = dataSnapshot.notPackedItems ? dataSnapshot.notPackedItems : [];
+                                this._appData.deletedItems = dataSnapshot.deletedItems ? dataSnapshot.deletedItems : [];
+
+                                this.updateMaxParallelEventCount();
+                                this.loadGearMap();
+                            })
+                        );
                 })
-            )
-            .subscribe((snapshot: SnapshotAction<DataSnapshot>) => {
-                let dataSnapshot = snapshot.payload.val();
-                this._appData.sessions = dataSnapshot.sessions.map(s => {
-                    let session: Session = {
-                        type: s.type,
-                        dateTime: Utility.toDateTime(s.dateTime),
-                        events: s.events ? s.events.map(e => {
-                            let event: Event = {
-                                order: e.order,
-                                startDateTime: Utility.toDateTime(e.startDateTime),
-                                endDateTime: Utility.toDateTime(e.endDateTime),
-                                duration: e.duration,
-                                sessionCount: e.sessionCount,
-                                description: e.description,
-                                venue: e.venue,
-                                participants: e.participants ? e.participants : [],
-                                gears: e.gears ? e.gears : [],
-                                remarks: e.remarks,
-                                color: '#EEEEEE',
-                                showActions: false
-                            }
-                            return event;
-                        }) : [],
-                        parallelEventCount: s.parallelEventCount
-                    };
-
-                    return session;
-                });
-
-                this._appData.boxes = dataSnapshot.boxes ? dataSnapshot.boxes : [];
-                this._appData.notPackedItems = dataSnapshot.notPackedItems ? dataSnapshot.notPackedItems : [];
-                this._appData.deletedItems = dataSnapshot.deletedItems ? dataSnapshot.deletedItems : [];
-
-                this.updateMaxParallelEventCount();
-                this.loadGearMap();
-            });
-
+            );
 
         //this.loadBoxes();
         //this.loadGearMap();
         //this.loadSchedules();
-
-        return true;
     }
 
     saveGearsToDatabase() {

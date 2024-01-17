@@ -3,7 +3,12 @@
         <div mat-icon-button [matMenuTriggerFor]="menu">
             <i class="fas fa-ellipsis-v"></i>
         </div>
-        <h1 (click)="triggerEditMode()">Supplies</h1>
+        <h1>Supplies</h1>
+        @if (allowEdit) {
+            <button mat-stroked-button color="basic" (click)="toggleEditMode()" [ngClass]="{'edit-on': editMode, 'edit-off': !editMode }">
+                Edit <strong>{{ editMode ? 'ON' : 'OFF'}}</strong>
+            </button>
+        }
     </div>
     <mat-menu #menu="matMenu">
         <button mat-menu-item (click)="onMenuButtonClicked('schedule')">
@@ -14,10 +19,6 @@
             <i class="fas fa-box-open"></i>
             <span>Supplies</span>
         </button>
-        <!-- <button mat-menu-item>
-        <mat-icon>notifications_off</mat-icon>
-        <span>Decoration</span>
-        </button> -->
     </mat-menu>
 </div>
 
@@ -80,9 +81,3 @@
         </div>
     </mat-expansion-panel>
 </div>
-
-@if (editMode) {
-    <button mat-fab class="exit-btn" color="basic" (click)="exitEditMode()">
-        <i class="fas fa-sign-out-alt"></i>
-    </button>
-}

@@ -8,6 +8,13 @@ export enum Schema {
     Draft = 'draft'
 }
 
+export interface SchemaDefinition {
+    name: string;
+    editable: boolean;
+    scheduleStartDateTime: LocalDateTime;
+    scheduleEndDateTime: LocalDateTime;
+}
+
 export type SnapshotMap = { [key: string]: DataSnapshot };
 
 export interface AppData {

@@ -1,6 +1,6 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { CommonModule, ViewportScroller } from '@angular/common';
-import { Component, EventEmitter } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -11,15 +11,14 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DateTime } from 'luxon';
-import { filter, mergeAll, windowTime } from 'rxjs';
 import { AppService } from '../app.service';
 import { ConfirmationDialog } from '../confirmation-dialog/confirmation-dialog.component';
 import { EventDetailsDialog } from '../event-details-dialog/event-details-dialog.component';
 import { EventEditDialog } from '../event-edit-dialog/event-edit-dialog.component';
+import { FireDatabaseModule } from '../fire-database-module/fire-database.module';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
 import { Event, EventEditForm, Session, SessionType } from '../models';
 import { GearMap, ValuesOf } from '../types';
-import { FireDatabaseModule } from '../fire-database-module/fire-database.module';
 
 @Component({
     selector: 'app-schedules',
@@ -51,7 +50,9 @@ export class SchedulesComponent {
         return this._appService.gearMap;
     }
 
-    private _editModeEvent: EventEmitter<never> = new EventEmitter<never>();
+    get allowEdit(): boolean {
+        return this._appService.allowEdit;
+    }
 
     editMode: boolean = false;
     ready: boolean = false;
@@ -88,21 +89,17 @@ export class SchedulesComponent {
         private readonly _breakpointObserver: BreakpointObserver,
         private readonly _activatedRoute: ActivatedRoute
     ) {
-        // undefined schema
-        if (!this._appService.setSchema(this._activatedRoute.snapshot.paramMap.get('schema'))) {
-            this._router.navigate(['/']);
-        }
-
-        this.ready = true;
-
-        // setup event to enable edit mode
-        this._editModeEvent.pipe(
-            windowTime(2000),
-            mergeAll(),
-            filter((_, index) => index + 1 >= 10)
-        ).subscribe(() => {
-            this.editMode = true;
-        });
+        this._appService
+            .loadData(this._activatedRoute.snapshot.paramMap.get('schema'))
+            .subscribe({
+                next: (_) => {
+                    this.ready = true;
+                },
+                error: (_) => {
+                    // undefined schema
+                    this._router.navigate(['/']);
+                }
+            });
     }
 
     onMenuButtonClicked(route: string) {
@@ -329,12 +326,7 @@ export class SchedulesComponent {
         }
     }
 
-    triggerEditMode() {
-        this._editModeEvent.emit();
-    }
-
-    exitEditMode() {
-        this.editMode = false;
-        this.previousHighlightedEvent && (this.previousHighlightedEvent.showActions = false);
+    toggleEditMode() {
+        this.editMode = !this.editMode;
     }
 }

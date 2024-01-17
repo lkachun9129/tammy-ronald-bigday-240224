@@ -7,7 +7,7 @@ import {
 } from '@angular/cdk/drag-drop';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -16,12 +16,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
-import { filter, mergeAll, windowTime } from 'rxjs';
 import { AppService } from '../app.service';
 import { ConfirmationDialog } from '../confirmation-dialog/confirmation-dialog.component';
+import { FireDatabaseModule } from '../fire-database-module/fire-database.module';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
 import { Box } from '../models';
-import { FireDatabaseModule } from '../fire-database-module/fire-database.module';
 
 @Component({
     selector: 'app-gears',
@@ -48,6 +47,10 @@ import { FireDatabaseModule } from '../fire-database-module/fire-database.module
 })
 export class GearsComponent {
 
+    get allowEdit(): boolean {
+        return this._appService.allowEdit;
+    }
+
     editMode: boolean = false;
 
     get boxes(): Box[] {
@@ -62,8 +65,6 @@ export class GearsComponent {
         return this._appService.deletedItems;
     }
 
-    private _editModeEvent: EventEmitter<never> = new EventEmitter<never>();
-
     constructor(
         private readonly _breakpointObserver: BreakpointObserver,
         private readonly _appService: AppService,
@@ -71,19 +72,14 @@ export class GearsComponent {
         private readonly _router: Router,
         private readonly _activatedRoute: ActivatedRoute
     ) {
-        // undefined schema
-        if (!this._appService.setSchema(this._activatedRoute.snapshot.paramMap.get('schema'))) {
-            this._router.navigate(['/']);
-        }
-
-        // setup event to enable edit mode
-        this._editModeEvent.pipe(
-            windowTime(2000),
-            mergeAll(),
-            filter((_, index) => index + 1 >= 10)
-        ).subscribe(() => {
-            this.editMode = true;
-        });
+        this._appService
+            .loadData(this._activatedRoute.snapshot.paramMap.get('schema'))
+            .subscribe({
+                error: (_) => {
+                    // undefined schema
+                    this._router.navigate(['/']);
+                }
+            });
     }
 
     gearLists: CdkDropList[] = [];
@@ -122,12 +118,8 @@ export class GearsComponent {
         });
     }
 
-    triggerEditMode() {
-        this._editModeEvent.emit();
-    }
-
-    exitEditMode() {
-        this.editMode = false;
+    toggleEditMode() {
+        this.editMode = !this.editMode;
     }
 
     drop(event: CdkDragDrop<string[]>) {
