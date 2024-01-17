@@ -107,7 +107,7 @@ export class GearsComponent {
     }
 
     onMenuButtonClicked(route: string) {
-        this._router.navigate([`/${route}`]);
+        this._router.navigate([`/${route}/${this._appService.dbSchema}`]);
     }
 
     purgeItem(item: string) {

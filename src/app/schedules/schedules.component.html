@@ -27,7 +27,7 @@
         </mat-expansion-panel-header>
         <div class="filter-panel-container">
             <mat-form-field subscriptSizing="dynamic">
-                <mat-label>Filter by name</mat-label>
+                <mat-label>Highlight by name</mat-label>
                 <mat-select multiple [(value)]="selectedNames">
                     @for (name of names; track name) {
                         <mat-option [value]="name">{{name}}</mat-option>

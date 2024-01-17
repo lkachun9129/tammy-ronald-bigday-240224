@@ -32,7 +32,7 @@ export class EventDetailsDialog {
 
     onBoxClicked(box: string) {
         this.dialogRef.close();
-        this._router.navigate(['/gears', box]);
+        this._router.navigate([`/gears/${this._appService.dbSchema}`, box]);
     }
 
     locateGear(item: string): { id: string, color: string } {

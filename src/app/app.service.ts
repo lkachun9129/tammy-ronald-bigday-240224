@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, SnapshotAction } from '@angular/fire/compat/database';
-import { DateTime } from 'luxon';
+import { DateTime, Interval } from 'luxon';
 import { AppData as AppDataOld } from './data';
 import { Box, Data, DataSnapshot, Event, EventInput, EventSnapshot, Schema, Session, SessionSnapshot, SessionType } from './models';
 import { GearMap } from './types';
@@ -12,7 +12,10 @@ import { map, mergeMap, of } from 'rxjs';
 })
 export class AppService {
 
-    private _schema: Schema = null;
+    private _dbSchema: Schema = null;
+    get dbSchema(): Schema {
+        return this._dbSchema;
+    };
 
     private _appData: Data = {
         sessions: [],
@@ -24,7 +27,13 @@ export class AppService {
     maxParallelEventCount: number = 0;
 
     get sessions(): Session[] {
-        return this._appData.sessions;
+        return this._appData.sessions.filter(s => {
+            if (s.type == SessionType.DateTime) {
+                return Interval.fromDateTimes(this._scheduleStartDateTime, this._scheduleEndDateTime).contains(s.dateTime);
+            } else {
+                return s.dateTime.hasSame(this._scheduleStartDateTime, 'day');
+            }
+        });
     }
 
     get boxes(): Box[] {
@@ -67,18 +76,22 @@ export class AppService {
 
     setSchema(name: string): boolean {
         if (name == Schema.Final) {
-            this._schema = Schema.Final;
+            this._dbSchema = Schema.Final;
         } else if (name == Schema.Photography) {
-            this._schema = Schema.Photography;
+            this._dbSchema = Schema.Photography;
+            this._scheduleStartDateTime = Utility.toDateTime([2024, 2, 24, 4, 0, 0]);
+            this._scheduleEndDateTime = Utility.toDateTime([2024, 2, 24, 23, 30, 0]);
         } else if (name == Schema.MakeUp) {
-            this._schema = Schema.MakeUp;
+            this._dbSchema = Schema.MakeUp;
+            this._scheduleStartDateTime = Utility.toDateTime([2024, 2, 24, 3, 0, 0]);
+            this._scheduleEndDateTime = Utility.toDateTime([2024, 2, 24, 23, 30, 0]);
         } else if (name == Schema.Draft) {
-            this._schema = Schema.Draft;
+            this._dbSchema = Schema.Draft;
         } else {
             return false;
         }
 
-        this._db.object(`/appData/${this._schema}`)
+        this._db.object(`/appData/${this.dbSchema}`)
             .snapshotChanges()
             .pipe(
                 mergeMap((snapshot: SnapshotAction<DataSnapshot>) => {
@@ -135,9 +148,9 @@ export class AppService {
     }
 
     saveGearsToDatabase() {
-        this._db.object(`/appData/${this._schema}/boxes`).set(this.boxes);
-        this._db.object(`/appData/${this._schema}/notPackedItems`).set(this.notPackedItems);
-        this._db.object(`/appData/${this._schema}/deletedItems`).set(this.deletedItems);
+        this._db.object(`/appData/${this.dbSchema}/boxes`).set(this.boxes);
+        this._db.object(`/appData/${this.dbSchema}/notPackedItems`).set(this.notPackedItems);
+        this._db.object(`/appData/${this.dbSchema}/deletedItems`).set(this.deletedItems);
     }
 
     saveAllToDatabase() {
@@ -171,7 +184,7 @@ export class AppService {
             deletedItems: this.deletedItems
         }
 
-        this._db.object(`/appData/${this._schema}`).set(data).then((value) => {
+        this._db.object(`/appData/${this.dbSchema}`).set(data).then((value) => {
             console.log(value);
         }, (reason) => {
             console.error(reason);

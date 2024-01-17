@@ -106,7 +106,7 @@ export class SchedulesComponent {
     }
 
     onMenuButtonClicked(route: string) {
-        this._router.navigate([`/${route}`]);
+        this._router.navigate([`/${route}/${this._appService.dbSchema}`]);
     }
 
     onShowRelatedOnlyChanged(checked: boolean) {
