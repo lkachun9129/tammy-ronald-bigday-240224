@@ -199,7 +199,7 @@ export class SchedulesComponent {
 
             let updatedEvent: Event = this.getEvent(formValue);
 
-            let updatedSessionIdx = this.sessions.findIndex(x => x.dateTime.equals(updatedEvent.startDateTime));
+            let updatedSessionIdx = this.sessions.findIndex(x => x.dateTime.equals(updatedEvent.startDateTime) && x.type == SessionType.DateTime);
             let updatedSession = this.sessions[updatedSessionIdx];
 
             updatedEvent.order = updatedSession.events.length;
@@ -216,7 +216,9 @@ export class SchedulesComponent {
             }
 
             this._appService.updateMaxParallelEventCount();
+            this._appService.updateGearLocation(updatedEvent);
             this._appService.updateDeletedGear();
+            this._appService.saveAllToDatabase();
         });
     }
 
@@ -239,10 +241,10 @@ export class SchedulesComponent {
 
             let updatedEvent: Event = this.getEvent(formValue);
 
-            let previousSessionIdx = this.sessions.findIndex(x => x.dateTime.equals(event.startDateTime));
+            let previousSessionIdx = this.sessions.findIndex(x => x.dateTime.equals(event.startDateTime) && x.type == SessionType.DateTime);
             let previousSession = this.sessions[previousSessionIdx];
 
-            let updatedSessionIdx = this.sessions.findIndex(x => x.dateTime.equals(updatedEvent.startDateTime));
+            let updatedSessionIdx = this.sessions.findIndex(x => x.dateTime.equals(updatedEvent.startDateTime) && x.type == SessionType.DateTime);
             let updatedSession = this.sessions[updatedSessionIdx];
 
             // remove event session count from previous session
@@ -284,6 +286,7 @@ export class SchedulesComponent {
             }
 
             this._appService.updateMaxParallelEventCount();
+            this._appService.updateGearLocation(updatedEvent);
             this._appService.updateDeletedGear();
 
             this._appService.saveAllToDatabase();
@@ -304,6 +307,7 @@ export class SchedulesComponent {
 
                     this._appService.updateMaxParallelEventCount();
                     this._appService.updateDeletedGear();
+                    this._appService.saveAllToDatabase();
                 }
             }
         })

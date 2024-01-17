@@ -230,15 +230,17 @@ export class AppService {
 
     locateGear(item: string): Box {
         let locatedBoxes = this.boxes.find(b => b.items.indexOf(item) >= 0);
+        return locatedBoxes || null;
+    }
 
-        if (locatedBoxes) {
-            return locatedBoxes;
-        } else {
-            if (!this.notPackedItems.includes(item)) {
+    updateGearLocation(event: Event): void {
+        event.gears.forEach(item => {
+            let locatedBoxes = this.boxes.find(b => b.items.indexOf(item) >= 0);
+
+            if (!locatedBoxes && !this.notPackedItems.includes(item)) {
                 this.notPackedItems.push(item);
             }
-            return null;
-        }
+        });
     }
 
     updateDeletedGear(): void {
@@ -246,8 +248,8 @@ export class AppService {
 
         let deletedItems: string[] = [];
 
+        let missingIdx: number[] = [];
         this.boxes.forEach(b => {
-            let missingIdx: number[] = [];
             b.items.forEach((i, idx) => {
                 if (!gears.includes(i)) {
                     missingIdx.push(idx);
@@ -257,6 +259,16 @@ export class AppService {
             missingIdx.reverse().forEach(idx => {
                 deletedItems.push(...b.items.splice(idx, 1));
             });
+        });
+
+        missingIdx.length = 0;
+        this.notPackedItems.forEach((i, idx) => {
+            if (!gears.includes(i)) {
+                missingIdx.push(idx);
+            }
+        });
+        missingIdx.reverse().forEach(idx => {
+            deletedItems.push(...this.notPackedItems.splice(idx, 1));
         });
 
         let stillDeletedItems = this.deletedItems.filter(i => !gears.includes(i));
