@@ -15,6 +15,7 @@ import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
 import { Event, EventEditForm, Gear, Session } from '../models';
 import { ValuesOf } from '../types';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { AppService } from '../app.service';
 
 @Component({
     selector: 'app-event-edit-dialog',
@@ -60,7 +61,9 @@ export class EventEditDialog {
     participantCtrl = new FormControl('');
     gearCtrl = new FormControl('');
 
-    allParticipants = ['姊妹Christy', '姊妹Janet', '姊妹Kapo', '姊妹Nicole', '姊妹Winglam', '兄弟Curtis', '兄弟May', '兄弟Ngai', '兄弟Norman', '兄弟Sam', 'Ronald', 'Tammy'];
+    get allParticipants(): string[] {
+        return this._appService.names;
+    }
 
     @ViewChild('participantInput') participantInput: ElementRef<HTMLInputElement>;
 
@@ -84,6 +87,7 @@ export class EventEditDialog {
     }
 
     constructor(
+        private readonly _appService: AppService,
         public dialogRef: MatDialogRef<EventEditDialog>,
         @Inject(MAT_DIALOG_DATA) public data: { event: Event, sessions: Session[], gearMap: { [key: string]: Gear }}
     ) {
