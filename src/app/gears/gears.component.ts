@@ -21,6 +21,7 @@ import { AppService } from '../app.service';
 import { ConfirmationDialog } from '../confirmation-dialog/confirmation-dialog.component';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
 import { Box } from '../models';
+import { FireDatabaseModule } from '../fire-database-module/fire-database.module';
 
 @Component({
     selector: 'app-gears',
@@ -40,6 +41,7 @@ import { Box } from '../models';
         MatMenuModule,
         MatSelectModule,
 
+        FireDatabaseModule,
         ConfirmationDialog],
     templateUrl: './gears.component.html',
     styleUrl: './gears.component.sass'
@@ -110,6 +112,7 @@ export class GearsComponent {
                 if (idx >= 0) {
                     this.deletedItems.splice(idx, 1);
                 }
+                this._appService.saveGearsToDatabase();
             }
         });
     }
@@ -133,6 +136,7 @@ export class GearsComponent {
                 event.currentIndex,
             );
         }
+        this._appService.saveGearsToDatabase();
     }
 
     useMobileLayout(): boolean {

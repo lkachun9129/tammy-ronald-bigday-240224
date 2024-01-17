@@ -90,6 +90,10 @@ export class AppService {
                     return session;
                 });
 
+                this._appData.boxes = dataSnapshot.boxes ? dataSnapshot.boxes : [];
+                this._appData.notPackedItems = dataSnapshot.notPackedItems ? dataSnapshot.notPackedItems : [];
+                this._appData.deletedItems = dataSnapshot.deletedItems ? dataSnapshot.deletedItems : [];
+
                 this.updateMaxParallelEventCount();
             });
 
@@ -99,7 +103,13 @@ export class AppService {
         //this.loadSchedules();
     }
 
-    save() {
+    saveGearsToDatabase() {
+        this._db.object('/appData/main/boxes').set(this.boxes);
+        this._db.object('/appData/main/notPackedItems').set(this.notPackedItems);
+        this._db.object('/appData/main/deletedItems').set(this.deletedItems);
+    }
+
+    saveAllToDatabase() {
         let data: DataSnapshot = {
             sessions: this.sessions.map(s => {
                 let session: SessionSnapshot = {

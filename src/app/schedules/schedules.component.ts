@@ -286,7 +286,7 @@ export class SchedulesComponent {
             this._appService.updateMaxParallelEventCount();
             this._appService.updateDeletedGear();
 
-            this._appService.save();
+            this._appService.saveAllToDatabase();
         });
     }
 
