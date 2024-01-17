@@ -328,5 +328,7 @@ export class SchedulesComponent {
 
     toggleEditMode() {
         this.editMode = !this.editMode;
+
+        this.sessions.forEach(s => s.events.forEach(e => e.showActions = false));
     }
 }
