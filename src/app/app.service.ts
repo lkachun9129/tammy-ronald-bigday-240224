@@ -19,7 +19,7 @@ export class AppService {
     };
 
     get allowEdit(): boolean {
-        return this._schemaDefinition.editable;
+        return this._schemaDefinition?.editable || false;
     }
 
     private _appData: Data = {
