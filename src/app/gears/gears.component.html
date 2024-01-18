@@ -73,9 +73,11 @@
                 <div class="item">
                     <div>{{index + 1}}</div>
                     <div>{{item}}</div>
-                    <button mat-stroked-button color="warn" (click)="purgeItem(item)">
-                        <i class="far fa-trash-alt"></i>
-                    </button>
+                    @if (editMode) {
+                        <button mat-stroked-button color="warn" (click)="purgeItem(item)">
+                            <i class="far fa-trash-alt"></i>
+                        </button>
+                    }
                 </div>
             }
         </div>
