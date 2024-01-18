@@ -8,11 +8,17 @@ export enum Schema {
     Draft = 'draft'
 }
 
+export enum UserRight {
+    Schedule = 'schedule',
+    Supplies = 'supplies'
+}
+
 export interface SchemaDefinition {
     name: string;
     editable: boolean;
     scheduleStartDateTime: LocalDateTime;
     scheduleEndDateTime: LocalDateTime;
+    rights: UserRight[];
 }
 
 export type SnapshotMap = { [key: string]: DataSnapshot };

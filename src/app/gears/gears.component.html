@@ -1,8 +1,10 @@
 <div class="sticky-header">
     <div class="header">
-        <div mat-icon-button [matMenuTriggerFor]="menu">
-            <i class="fas fa-ellipsis-v"></i>
-        </div>
+        @if (hasMultipleRights) {
+            <div mat-icon-button [matMenuTriggerFor]="menu">
+                <i class="fas fa-ellipsis-v"></i>
+            </div>
+        }
         <h1>Supplies</h1>
         @if (allowEdit) {
             <button mat-stroked-button color="basic" (click)="toggleEditMode()" [ngClass]="{'edit-on': editMode, 'edit-off': !editMode }">
@@ -11,14 +13,18 @@
         }
     </div>
     <mat-menu #menu="matMenu">
-        <button mat-menu-item (click)="onMenuButtonClicked('schedule')">
-            <i class="fas fa-calendar-alt"></i>
-            <span>Schedule</span>
-        </button>
-        <button mat-menu-item (click)="onMenuButtonClicked('supplies')">
-            <i class="fas fa-box-open"></i>
-            <span>Supplies</span>
-        </button>
+        @if (hasAccessRight(UserRight.Schedule)) {
+            <button mat-menu-item (click)="onMenuButtonClicked('schedule')">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Schedule</span>
+            </button>
+        }
+        @if (hasAccessRight(UserRight.Supplies)) {
+            <button mat-menu-item (click)="onMenuButtonClicked('supplies')">
+                <i class="fas fa-box-open"></i>
+                <span>Supplies</span>
+            </button>
+        }
     </mat-menu>
 </div>
 

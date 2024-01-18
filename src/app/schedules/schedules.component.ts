@@ -17,7 +17,7 @@ import { EventDetailsDialog } from '../event-details-dialog/event-details-dialog
 import { EventEditDialog } from '../event-edit-dialog/event-edit-dialog.component';
 import { FireDatabaseModule } from '../fire-database-module/fire-database.module';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
-import { Event, EventEditForm, Session, SessionType } from '../models';
+import { Event, EventEditForm, Session, SessionType, UserRight } from '../models';
 import { GearMap, ValuesOf } from '../types';
 
 @Component({
@@ -42,6 +42,7 @@ import { GearMap, ValuesOf } from '../types';
 })
 export class SchedulesComponent {
 
+    readonly UserRight = UserRight;
     readonly SessionType = SessionType;
 
     private _showRelatedFirst: boolean = false;
@@ -73,6 +74,14 @@ export class SchedulesComponent {
 
     get names(): string[] {
         return this._appService.names;
+    }
+
+    get hasMultipleRights(): boolean {
+        return this._appService.hasMultipleRights;
+    }
+
+    hasAccessRight(userRight: UserRight): boolean {
+        return this._appService.hasAccessRight(userRight);
     }
 
     selectedNames: string[] = [];

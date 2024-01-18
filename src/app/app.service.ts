@@ -3,7 +3,7 @@ import { AngularFireDatabase, SnapshotAction } from '@angular/fire/compat/databa
 import { DateTime, Interval } from 'luxon';
 import { Observable, map, mergeMap, of, throwError } from 'rxjs';
 import { AppData as AppDataOld } from './data';
-import { Box, Data, DataSnapshot, Event, EventInput, EventSnapshot, SchemaDefinition, Session, SessionSnapshot, SessionType } from './models';
+import { Box, Data, DataSnapshot, Event, EventInput, EventSnapshot, SchemaDefinition, Session, SessionSnapshot, SessionType, UserRight } from './models';
 import { GearMap } from './types';
 import { Utility } from './utility';
 
@@ -153,6 +153,14 @@ export class AppService {
         //this.loadBoxes();
         //this.loadGearMap();
         //this.loadSchedules();
+    }
+
+    get hasMultipleRights(): boolean {
+        return this._schemaDefinition?.rights.length > 1 || false;
+    }
+
+    hasAccessRight(userRight: UserRight): boolean {
+        return this._schemaDefinition?.rights.includes(userRight) || false;
     }
 
     saveGearsToDatabase() {

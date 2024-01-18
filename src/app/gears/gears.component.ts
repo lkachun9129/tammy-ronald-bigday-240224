@@ -20,7 +20,7 @@ import { AppService } from '../app.service';
 import { ConfirmationDialog } from '../confirmation-dialog/confirmation-dialog.component';
 import { FireDatabaseModule } from '../fire-database-module/fire-database.module';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
-import { Box } from '../models';
+import { Box, UserRight } from '../models';
 
 @Component({
     selector: 'app-gears',
@@ -46,6 +46,16 @@ import { Box } from '../models';
     styleUrl: './gears.component.sass'
 })
 export class GearsComponent {
+
+    readonly UserRight = UserRight;
+
+    get hasMultipleRights(): boolean {
+        return this._appService.hasMultipleRights;
+    }
+
+    hasAccessRight(userRight: UserRight): boolean {
+        return this._appService.hasAccessRight(userRight);
+    }
 
     get allowEdit(): boolean {
         return this._appService.allowEdit;

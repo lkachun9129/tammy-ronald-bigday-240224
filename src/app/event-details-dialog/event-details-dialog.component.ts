@@ -1,10 +1,10 @@
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { Box, Event } from '../models';
-import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
+import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
 import { Router, RouterModule } from '@angular/router';
 import { AppService } from '../app.service';
+import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
+import { Event, UserRight } from '../models';
 
 @Component({
     selector: 'app-event-details-dialog',
@@ -31,8 +31,10 @@ export class EventDetailsDialog {
     ) { }
 
     onBoxClicked(box: string) {
-        this.dialogRef.close();
-        this._router.navigate([`/gears/${this._appService.dbSchema}`, box]);
+        if (this._appService.hasAccessRight(UserRight.Supplies)) {
+            this.dialogRef.close();
+            this._router.navigate([`/gears/${this._appService.dbSchema}`, box]);
+        }
     }
 
     locateGear(item: string): { id: string, color: string } {
