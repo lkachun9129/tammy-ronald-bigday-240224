@@ -38,7 +38,7 @@ export class AppService {
             if (s.type == SessionType.DateTime) {
                 return Interval.fromDateTimes(this._scheduleStartDateTime, this._scheduleEndDateTime).contains(s.dateTime);
             } else {
-                return s.dateTime.hasSame(this._scheduleStartDateTime, 'day');
+                return s.dateTime.hasSame(this._scheduleStartDateTime, 'day') || Interval.fromDateTimes(this._scheduleStartDateTime, this._scheduleEndDateTime).contains(s.dateTime);
             }
         });
     }
