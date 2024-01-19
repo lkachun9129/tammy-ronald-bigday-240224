@@ -33,7 +33,7 @@ export class EventDetailsDialog {
     onBoxClicked(box: string) {
         if (this._appService.hasAccessRight(UserRight.Supplies)) {
             this.dialogRef.close();
-            this._router.navigate([`/gears/${this._appService.dbSchema}`, box]);
+            this._router.navigate([`/supplies/${this._appService.dbSchema}`, box]);
         }
     }
 
