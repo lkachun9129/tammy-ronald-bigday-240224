@@ -154,7 +154,7 @@ export class SchedulesComponent {
     }
 
     getEventColor(event: Event): string {
-        return this.isRelatedEvent(event) ? '#ffc688' : '#eeeeee';
+        return this.isRelatedEvent(event) ? '#ffe7ce' : '#ffffff';
     }
 
     showEventDetails(event: Event) {

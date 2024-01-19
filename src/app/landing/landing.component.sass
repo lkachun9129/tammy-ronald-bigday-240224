@@ -1,9 +1,16 @@
-.container
+.page-container
     display: flex
-    height: calc(100vh - 18px)
+    height: calc(100vh - 24px)
     justify-content: center
     flex-direction: column
     padding: 12px
-.time-component
+    background: radial-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.15))
+    background-size: 200%
+    animation: aurora 7s infinite
+
+.time-component span
     font-size: 4em
     line-height: 1em
+    background: linear-gradient(345deg, #e78b35, #9232c5)
+    background-clip: text
+    -webkit-text-fill-color: transparent

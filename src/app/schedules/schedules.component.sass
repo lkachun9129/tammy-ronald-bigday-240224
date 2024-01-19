@@ -1,7 +1,15 @@
-h1
-    font-size: 1.5em
+.page-container
+    height: 100vh
+    background: radial-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.15))
+    background-size: 200%
+    animation: aurora 7s infinite
+    overflow: hidden
+h1> span
+        font-size: 1.5em
+        background: linear-gradient(270deg, #e78b35, #9232c5)
+        background-clip: text
+        -webkit-text-fill-color: transparent
 .sticky-header
-    background-color: #FFFFFF
     position: -webkit-sticky /* Safari */
     position: sticky
     top: 0
@@ -9,11 +17,14 @@ h1
 .header
     display: flex
     align-items: center
+    height: 52px
     div[mat-icon-button]
         display: flex
         align-items: center
         justify-content: center
         width: 50px
+        height: 52px
+        color: #9232c5
     h1
         flex-grow: 1
         margin-left: 12px
@@ -21,8 +32,10 @@ h1
         margin-right: 12px
         &.edit-off
             color: #cccccc
+            background: #ffffff
         &.edit-on
-            color: #1c78db
+            color: #ffffff
+            background: linear-gradient(10deg, #e78b35, #9232c5)
 
 
 button[mat-menu-item] i
@@ -30,21 +43,46 @@ button[mat-menu-item] i
     width: 25px
     text-align: center
 .schedule-container
+    height: calc(100vh - 101px)
+    padding-top: 12px
+    overflow-y: auto
+.schedule-scroll-panel
     display: flex
-    padding-left: 8px
-    padding-right: 8px
+    padding-left: 12px
 .datetime-col
     width: 50px !important
     font-size: 0.7em
 .event-col
     width: calc(100% - 50px)
-    overflow-x: scroll
+    padding-bottom: 24px
+    padding-right: 12px
+    overflow-x: auto
     overflow-y: hidden
 .event-scroll-wrapper
     position: relative
 
 .filter-panel
     margin-bottom: 10px
+
+mat-grid-tile
+    border-radius: 3px
+    &.header-tile
+        border: 1px solid #dddddd
+        border-right: 0px
+        border-top-right-radius: 0px
+        border-bottom-right-radius: 0px
+        background: rgb(255, 255, 255, 0.4)
+    &.header-extended-tile
+        border: 1px solid #dddddd
+        border-left: 0px
+        border-top-left-radius: 0px
+        border-bottom-left-radius: 0px
+        background: rgb(255, 255, 255, 0.4)
+    &.event-tile
+        box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)
+    &.placeholder-tile
+        background: rgb(255, 255, 255, 0.4)
+        border: 1px solid #dddddd
 
 .event-container
     display: flex
@@ -73,9 +111,6 @@ button[mat-menu-item] i
         text-align: center
         margin: 1px 5px
         font-size: 1em
-
-.placeholder-tile
-    border: 1px solid #eeeeee
 
 .scroll-btn
     position: fixed

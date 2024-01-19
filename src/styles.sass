@@ -3,9 +3,24 @@
     font-size: 14px
 
 body
-    margin-top: 0px
-    margin-left: 0px
-    margin-right: 0px
+    margin: 0px
+    background: linear-gradient(30deg, #ede8f6 0%, #f3f9fc 50%, #ddeef8 100%)
+    background-size: 200%
+    animation: aurora 10s infinite
+
+
+@keyframes aurora
+    0%
+        background-position: left top
+    25%
+        background-position: right top
+    50%
+        background-position: right bottom
+    75%
+        background-position: left bottom
+    100%
+        background-position: left top
+
 
 .material-icons
     font-family: 'Material Icons'

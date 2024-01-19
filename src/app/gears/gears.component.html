@@ -1,91 +1,95 @@
-<div class="sticky-header">
-    <div class="header">
-        @if (hasMultipleRights) {
-            <div mat-icon-button [matMenuTriggerFor]="menu">
-                <i class="fas fa-ellipsis-v"></i>
-            </div>
-        }
-        <h1>Supplies</h1>
-        @if (allowEdit) {
-            <button mat-stroked-button color="basic" (click)="toggleEditMode()" [ngClass]="{'edit-on': editMode, 'edit-off': !editMode }">
-                Edit <strong>{{ editMode ? 'ON' : 'OFF'}}</strong>
-            </button>
-        }
+<div class="page-container">
+    <div class="sticky-header">
+        <div class="header">
+            @if (hasMultipleRights) {
+                <div mat-icon-button [matMenuTriggerFor]="menu">
+                    <div>
+                        <i class="fas fa-ellipsis-v"></i>
+                    </div>
+                </div>
+            }
+            <h1><span>Supplies</span></h1>
+            @if (allowEdit) {
+                <button mat-stroked-button color="basic" (click)="toggleEditMode()" [ngClass]="{'edit-on': editMode, 'edit-off': !editMode }">
+                    Edit <strong>{{ editMode ? 'ON' : 'OFF'}}</strong>
+                </button>
+            }
+        </div>
+        <mat-menu #menu="matMenu">
+            @if (hasAccessRight(UserRight.Schedule)) {
+                <button mat-menu-item (click)="onMenuButtonClicked('schedule')">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Schedule</span>
+                </button>
+            }
+            @if (hasAccessRight(UserRight.Supplies)) {
+                <button mat-menu-item (click)="onMenuButtonClicked('supplies')">
+                    <i class="fas fa-box-open"></i>
+                    <span>Supplies</span>
+                </button>
+            }
+        </mat-menu>
     </div>
-    <mat-menu #menu="matMenu">
-        @if (hasAccessRight(UserRight.Schedule)) {
-            <button mat-menu-item (click)="onMenuButtonClicked('schedule')">
-                <i class="fas fa-calendar-alt"></i>
-                <span>Schedule</span>
-            </button>
-        }
-        @if (hasAccessRight(UserRight.Supplies)) {
-            <button mat-menu-item (click)="onMenuButtonClicked('supplies')">
-                <i class="fas fa-box-open"></i>
-                <span>Supplies</span>
-            </button>
-        }
-    </mat-menu>
-</div>
 
-<div class="box-container">
-    @for (box of boxes; track box) {
-        <mat-expansion-panel class="box-panel" hideToggle [expanded]="isExpanded(box.id)"
-            [id]="box.id" cdkDropList
+    <div class="box-container">
+        @for (box of boxes; track box) {
+            <mat-expansion-panel class="box-panel" hideToggle [expanded]="isExpanded(box.id)"
+                [id]="box.id" cdkDropList
+                #gearList="cdkDropList"
+                [cdkDropListData]="box.items"
+                [cdkDropListConnectedTo]="dropListIds"
+                [cdkDropListLockAxis]="'y'"
+                [cdkDropListDisabled]="!editMode"
+                (cdkDropListDropped)="drop($event)">
+                <mat-expansion-panel-header [style.background]="box.color">
+                    <mat-panel-title><strong>{{box.id}}</strong></mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="box-panel-container">
+                    <p>{{box.description}}</p>
+                    @for (item of box.items; track item; let index = $index) {
+                        <div cdkDrag class="item" [ngClass]="{ 'mobile': useMobileLayout() }"><div>{{index + 1}}</div><div>{{item}}</div></div>
+                    }
+                </div>
+            </mat-expansion-panel>
+        }
+
+        <mat-expansion-panel class="box-panel" hideToggle
+            [id]="'uncategorized'" cdkDropList
             #gearList="cdkDropList"
-            [cdkDropListData]="box.items"
+            [cdkDropListData]="notPackedItems"
             [cdkDropListConnectedTo]="dropListIds"
             [cdkDropListLockAxis]="'y'"
             [cdkDropListDisabled]="!editMode"
             (cdkDropListDropped)="drop($event)">
-            <mat-expansion-panel-header [style.background]="box.color">
-                <mat-panel-title><strong>{{box.id}}</strong></mat-panel-title>
+            <mat-expansion-panel-header [style.background]="'#acb9ca'">
+                <mat-panel-title><strong>未分類物品</strong></mat-panel-title>
             </mat-expansion-panel-header>
             <div class="box-panel-container">
-                <p>{{box.description}}</p>
-                @for (item of box.items; track item; let index = $index) {
+                <p></p>
+                @for (item of notPackedItems; track item; let index = $index) {
                     <div cdkDrag class="item" [ngClass]="{ 'mobile': useMobileLayout() }"><div>{{index + 1}}</div><div>{{item}}</div></div>
                 }
             </div>
         </mat-expansion-panel>
-    }
 
-    <mat-expansion-panel class="box-panel" hideToggle
-        [id]="'uncategorized'" cdkDropList
-        #gearList="cdkDropList"
-        [cdkDropListData]="notPackedItems"
-        [cdkDropListConnectedTo]="dropListIds"
-        [cdkDropListLockAxis]="'y'"
-        [cdkDropListDisabled]="!editMode"
-        (cdkDropListDropped)="drop($event)">
-        <mat-expansion-panel-header [style.background]="'#acb9ca'">
-            <mat-panel-title><strong>未分類物品</strong></mat-panel-title>
-        </mat-expansion-panel-header>
-        <div class="box-panel-container">
-            <p></p>
-            @for (item of notPackedItems; track item; let index = $index) {
-                <div cdkDrag class="item" [ngClass]="{ 'mobile': useMobileLayout() }"><div>{{index + 1}}</div><div>{{item}}</div></div>
-            }
-        </div>
-    </mat-expansion-panel>
-
-    <mat-expansion-panel class="box-panel" hideToggle>
-        <mat-expansion-panel-header [style.background]="'#000000'">
-            <mat-panel-title [style.color]="'#ffffff'"><i class="far fa-trash-alt" [style.margin-right]="'5px'"></i><strong>資源回收筒</strong></mat-panel-title>
-        </mat-expansion-panel-header>
-        <div class="filter-panel-container">
-            <p></p>
-            @for (item of deletedItems; track item; let index = $index) {
-                <div class="item">
-                    <div>{{index + 1}}</div>
-                    <div>{{item}}</div>
-                    @if (editMode) {
-                        <button mat-stroked-button color="warn" (click)="purgeItem(item)">
-                            <i class="far fa-trash-alt"></i>
-                        </button>
-                    }
-                </div>
-            }
-        </div>
-    </mat-expansion-panel>
+        <mat-expansion-panel class="box-panel" hideToggle>
+            <mat-expansion-panel-header [style.background]="'#000000'">
+                <mat-panel-title [style.color]="'#ffffff'"><i class="far fa-trash-alt" [style.margin-right]="'5px'"></i><strong>資源回收筒</strong></mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="filter-panel-container">
+                <p></p>
+                @for (item of deletedItems; track item; let index = $index) {
+                    <div class="item">
+                        <div>{{index + 1}}</div>
+                        <div>{{item}}</div>
+                        @if (editMode) {
+                            <button mat-stroked-button color="warn" (click)="purgeItem(item)">
+                                <i class="far fa-trash-alt"></i>
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+        </mat-expansion-panel>
+    </div>
 </div>

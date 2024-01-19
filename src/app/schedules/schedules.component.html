@@ -1,117 +1,120 @@
-<div class="sticky-header">
-    <div class="header">
-        @if (hasMultipleRights) {
-            <div mat-icon-button [matMenuTriggerFor]="menu">
-                <i class="fas fa-ellipsis-v"></i>
-            </div>
-        }
-        <h1>Schedule</h1>
-        @if (allowEdit) {
-            <button mat-stroked-button color="basic" (click)="toggleEditMode()" [ngClass]="{'edit-on': editMode, 'edit-off': !editMode }">
-                Edit <strong>{{ editMode ? 'ON' : 'OFF'}}</strong>
-            </button>
-        }
-    </div>
-    <mat-menu #menu="matMenu">
-        @if (hasAccessRight(UserRight.Schedule)) {
-            <button mat-menu-item (click)="onMenuButtonClicked('schedule')">
-                <i class="fas fa-calendar-alt"></i>
-                <span>Schedule</span>
-            </button>
-        }
-        @if (hasAccessRight(UserRight.Supplies)) {
-            <button mat-menu-item (click)="onMenuButtonClicked('supplies')">
-                <i class="fas fa-box-open"></i>
-                <span>Supplies</span>
-            </button>
-        }
-        <!-- <button mat-menu-item>
-        <mat-icon>notifications_off</mat-icon>
-        <span>Decoration</span>
-        </button> -->
-    </mat-menu>
-    <mat-expansion-panel class="filter-panel" hideToggle>
-        <mat-expansion-panel-header>
-            <mat-panel-title>
-                Filters
-            </mat-panel-title>
-        </mat-expansion-panel-header>
-        <div class="filter-panel-container">
-            <mat-form-field subscriptSizing="dynamic">
-                <mat-label>Highlight by name</mat-label>
-                <mat-select multiple [(value)]="selectedNames">
-                    @for (name of names; track name) {
-                        <mat-option [value]="name">{{name}}</mat-option>
-                    }
-                </mat-select>
-            </mat-form-field>
-            <mat-checkbox class="example-margin" (change)="onShowRelatedOnlyChanged($event.checked)">
-                Show related events first
-            </mat-checkbox>
-        </div>
-    </mat-expansion-panel>
-</div>
-<div class="schedule-container" *ngIf="ready">
-    <div class="datetime-col">
-        <mat-grid-list cols="1" rowHeight="70px" gutterSize="5px">
-            @for (session of sessions; track session) {
-                @if (session.type == SessionType.Date) {
-                    <mat-grid-tile [style.background]="'#deeeff'">{{session.dateTime | luxonDateFormat: 'dd/L'}}</mat-grid-tile>
-                } @else {
-                    <mat-grid-tile [id]="session.dateTime.toFormat('MMddHHmm')">{{session.dateTime | luxonDateFormat: 'HH:mm'}}</mat-grid-tile>
-                }
+<div class="page-container">
+    <div class="sticky-header">
+        <div class="header">
+            @if (hasMultipleRights) {
+                <div mat-icon-button [matMenuTriggerFor]="menu">
+                    <i class="fas fa-ellipsis-v"></i>
+                </div>
             }
-        </mat-grid-list>
+            <h1><span>Schedule</span></h1>
+            @if (allowEdit) {
+                <button mat-stroked-button color="basic" (click)="toggleEditMode()" [ngClass]="{'edit-on': editMode, 'edit-off': !editMode }">
+                    Edit <strong>{{ editMode ? 'ON' : 'OFF'}}</strong>
+                </button>
+            }
+        </div>
+        <mat-menu #menu="matMenu">
+            @if (hasAccessRight(UserRight.Schedule)) {
+                <button mat-menu-item (click)="onMenuButtonClicked('schedule')">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Schedule</span>
+                </button>
+            }
+            @if (hasAccessRight(UserRight.Supplies)) {
+                <button mat-menu-item (click)="onMenuButtonClicked('supplies')">
+                    <i class="fas fa-box-open"></i>
+                    <span>Supplies</span>
+                </button>
+            }
+            <!-- <button mat-menu-item>
+            <mat-icon>notifications_off</mat-icon>
+            <span>Decoration</span>
+            </button> -->
+        </mat-menu>
+        <mat-expansion-panel class="filter-panel" hideToggle [style.margin]="'0px -5px'">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Filters
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="filter-panel-container">
+                <mat-form-field subscriptSizing="dynamic">
+                    <mat-label>Highlight by name</mat-label>
+                    <mat-select multiple [(value)]="selectedNames">
+                        @for (name of names; track name) {
+                            <mat-option [value]="name">{{name}}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+                <mat-checkbox class="example-margin" (change)="onShowRelatedOnlyChanged($event.checked)">
+                    Show related events first
+                </mat-checkbox>
+            </div>
+        </mat-expansion-panel>
     </div>
-    <div class="event-col">
-        <div class="event-scroll-wrapper" [style.width]="gridWidth">
-            <mat-grid-list [cols]="maxParallelEventCount" rowHeight="70px" gutterSize="5px">
-                @for (session of sessions; track session) {
-                    @for (event of session.events; track event) {
-                        <mat-grid-tile [rowspan]="event.sessionCount" colspan="1" [style.background]="getEventColor(event)">
-                            @if (editMode) {
-                                <div class="event-container" (click)="previousHighlightedEvent && previousHighlightedEvent.showActions = false; event.showActions = true; previousHighlightedEvent = event;">
-                                    <div class="event-desc">{{event.description}}</div>
-                                    <div class="event-venue"><i class="fas fa-map-marker-alt"></i>{{event.venue}}</div>
-                                    <div class="event-duration"><i class="fas fa-regular fa-clock"></i>{{event.duration}}mins</div>
-                                </div>
-                                @if (event.showActions) {
-                                    <div class="event-action-container" (click)="event.showActions = false">
-                                        <button mat-mini-fab color="basic" (click)="editEvent(event)">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button mat-mini-fab color="primary" (click)="showEventDetails(event)">
-                                            <i class="fas fa-info"></i>
-                                        </button>
-                                        <button mat-mini-fab color="warn" (click)="removeEvent(event, session)">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </div>
-                                }
-                            } @else {
-                                <div class="event-container" (click)="showEventDetails(event)">
-                                    <div class="event-desc">{{event.description}}</div>
-                                    <div class="event-venue"><i class="fas fa-map-marker-alt"></i>{{event.venue}}</div>
-                                    <div class="event-duration"><i class="fas fa-regular fa-clock"></i>{{event.duration}}mins</div>
-                                </div>
-                            }
-                        </mat-grid-tile>
-                    }
-                    @if (session.parallelEventCount < maxParallelEventCount) {
+    <div class="schedule-container">
+        <div class="schedule-scroll-panel" *ngIf="ready">
+            <div class="datetime-col">
+                <mat-grid-list cols="1" rowHeight="70px" gutterSize="5px">
+                    @for (session of sessions; track session) {
                         @if (session.type == SessionType.Date) {
-                            <mat-grid-tile [colspan]="maxParallelEventCount" [style.background]="'#deeeff'"></mat-grid-tile>
+                            <mat-grid-tile class="header-tile">{{session.dateTime | luxonDateFormat: 'dd/L'}}</mat-grid-tile>
                         } @else {
-                            @for (item of [].constructor(maxParallelEventCount - session.parallelEventCount); track item; let index = $index) {
-                                <mat-grid-tile class="placeholder-tile" colspan="1"></mat-grid-tile>
-                            }
+                            <mat-grid-tile [id]="session.dateTime.toFormat('MMddHHmm')">{{session.dateTime | luxonDateFormat: 'HH:mm'}}</mat-grid-tile>
                         }
                     }
-                }
-            </mat-grid-list>
+                </mat-grid-list>
+            </div>
+            <div class="event-col">
+                <div class="event-scroll-wrapper" [style.width]="gridWidth">
+                    <mat-grid-list [cols]="maxParallelEventCount" rowHeight="70px" gutterSize="5px">
+                        @for (session of sessions; track session) {
+                            @for (event of session.events; track event) {
+                                <mat-grid-tile class="event-tile" [rowspan]="event.sessionCount" colspan="1" [style.background]="getEventColor(event)">
+                                    @if (editMode) {
+                                        <div class="event-container" (click)="previousHighlightedEvent && previousHighlightedEvent.showActions = false; event.showActions = true; previousHighlightedEvent = event;">
+                                            <div class="event-desc">{{event.description}}</div>
+                                            <div class="event-venue"><i class="fas fa-map-marker-alt"></i>{{event.venue}}</div>
+                                            <div class="event-duration"><i class="fas fa-regular fa-clock"></i>{{event.duration}}mins</div>
+                                        </div>
+                                        @if (event.showActions) {
+                                            <div class="event-action-container" (click)="event.showActions = false">
+                                                <button mat-mini-fab color="basic" (click)="editEvent(event)">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button mat-mini-fab color="primary" (click)="showEventDetails(event)">
+                                                    <i class="fas fa-info"></i>
+                                                </button>
+                                                <button mat-mini-fab color="warn" (click)="removeEvent(event, session)">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </div>
+                                        }
+                                    } @else {
+                                        <div class="event-container" (click)="showEventDetails(event)">
+                                            <div class="event-desc">{{event.description}}</div>
+                                            <div class="event-venue"><i class="fas fa-map-marker-alt"></i>{{event.venue}}</div>
+                                            <div class="event-duration"><i class="fas fa-regular fa-clock"></i>{{event.duration}}mins</div>
+                                        </div>
+                                    }
+                                </mat-grid-tile>
+                            }
+                            @if (session.parallelEventCount < maxParallelEventCount) {
+                                @if (session.type == SessionType.Date) {
+                                    <mat-grid-tile class="header-extended-tile" [colspan]="maxParallelEventCount"></mat-grid-tile>
+                                } @else {
+                                    @for (item of [].constructor(maxParallelEventCount - session.parallelEventCount); track item; let index = $index) {
+                                        <mat-grid-tile class="placeholder-tile" colspan="1"></mat-grid-tile>
+                                    }
+                                }
+                            }
+                        }
+                    </mat-grid-list>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
 <button mat-fab class="scroll-btn" color="primary" (click)="scrollToCurrentEvent()">
     <i class="fas fa-history"></i>
 </button>
