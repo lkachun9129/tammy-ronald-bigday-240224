@@ -1,6 +1,6 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { CommonModule, ViewportScroller } from '@angular/common';
-import { Component } from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import { Component, Inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -94,9 +94,9 @@ export class SchedulesComponent {
         private readonly _appService: AppService,
         private readonly _router: Router,
         private readonly _dialog: MatDialog,
-        private readonly _viewerportScroller: ViewportScroller,
         private readonly _breakpointObserver: BreakpointObserver,
-        private readonly _activatedRoute: ActivatedRoute
+        private readonly _activatedRoute: ActivatedRoute,
+        @Inject(DOCUMENT) private readonly _document: Document
     ) {
         this._appService
             .loadData(this._activatedRoute.snapshot.paramMap.get('schema'))
@@ -329,7 +329,12 @@ export class SchedulesComponent {
         let currentDateTime = DateTime.now();
         for (let session of this.sessions) {
             if (session.dateTime >= currentDateTime.plus({ minute: -45 })) {
-                this._viewerportScroller.scrollToAnchor(session.dateTime.toFormat('LLddHHmm'));
+                this._document.getElementById(session.dateTime.toFormat('LLddHHmm'))
+                    .scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start',
+                        inline: 'nearest'
+                    });
                 break;
             }
         }

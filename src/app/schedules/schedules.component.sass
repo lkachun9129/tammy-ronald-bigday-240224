@@ -10,6 +10,7 @@ h1> span
         background-clip: text
         -webkit-text-fill-color: transparent
 .sticky-header
+    height: 101px
     position: -webkit-sticky /* Safari */
     position: sticky
     top: 0
@@ -37,13 +38,16 @@ h1> span
             color: #ffffff
             background: linear-gradient(10deg, #e78b35, #9232c5)
 
+.filter-panel-container
+    display: flex
+    align-items: center
 
 button[mat-menu-item] i
     margin-right: 10px
     width: 25px
     text-align: center
 .schedule-container
-    height: calc(100vh - 101px)
+    height: calc(100vh - 113px)
     padding-top: 12px
     overflow-y: auto
 .schedule-scroll-panel
