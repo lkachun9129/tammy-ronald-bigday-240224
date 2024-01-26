@@ -75,6 +75,8 @@ export class GearsComponent {
         return this._appService.deletedItems;
     }
 
+    private _expandedBoxes: string[] = [];
+
     constructor(
         private readonly _breakpointObserver: BreakpointObserver,
         private readonly _appService: AppService,
@@ -109,7 +111,14 @@ export class GearsComponent {
     }
 
     isExpanded(box: string): boolean {
-        return this._activatedRoute.snapshot.paramMap.get('box') == box;
+        return this._activatedRoute.snapshot.paramMap.get('box') == box || this._expandedBoxes.includes(box);
+    }
+
+    onExpanded(box: string) {
+        let idx = this._expandedBoxes.indexOf(box);
+        if (idx >= 0) {
+            this._expandedBoxes.splice(idx, 1);
+        }
     }
 
     onMenuButtonClicked(route: string) {
@@ -132,10 +141,19 @@ export class GearsComponent {
         this.editMode = !this.editMode;
     }
 
+    private findAffectedBox(data: string[]): string {
+        let box = this.boxes.find(b => b.items === data);
+        return box?.id || 'notPacked';
+    }
+
     drop(event: CdkDragDrop<string[]>) {
         if (event.previousContainer === event.container) {
+            this._expandedBoxes.push(this.findAffectedBox(event.container.data));
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
         } else {
+            this._expandedBoxes.push(this.findAffectedBox(event.previousContainer.data));
+            this._expandedBoxes.push(this.findAffectedBox(event.container.data));
+
             transferArrayItem(
                 event.previousContainer.data,
                 event.container.data,

@@ -33,7 +33,9 @@
 
     <div class="box-container">
         @for (box of boxes; track box) {
-            <mat-expansion-panel class="box-panel" hideToggle [expanded]="isExpanded(box.id)"
+            <mat-expansion-panel class="box-panel" hideToggle
+                [expanded]="isExpanded(box.id)"
+                (afterExpand)="onExpanded(box.id)"
                 [id]="box.id" cdkDropList
                 #gearList="cdkDropList"
                 [cdkDropListData]="box.items"
@@ -54,6 +56,8 @@
         }
 
         <mat-expansion-panel class="box-panel" hideToggle
+            [expanded]="isExpanded('notPacked')"
+            (afterExpand)="onExpanded('notPacked')"
             [id]="'uncategorized'" cdkDropList
             #gearList="cdkDropList"
             [cdkDropListData]="notPackedItems"
