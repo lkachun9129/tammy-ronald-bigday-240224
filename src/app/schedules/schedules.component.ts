@@ -98,8 +98,6 @@ export class SchedulesComponent {
         private readonly _activatedRoute: ActivatedRoute,
         @Inject(DOCUMENT) private readonly _document: Document
     ) {
-        window.scrollTo(0, 1);
-
         this._appService
             .loadData(this._activatedRoute.snapshot.paramMap.get('schema'))
             .subscribe({
