@@ -79,10 +79,10 @@
                 </mat-autocomplete>
             </mat-form-field>
 
-            <mat-form-field class="input-remarks">
-                <mat-label>Remarks</mat-label>
-                <textarea matInput cdkTextareaAutosize formControlName="remarks"></textarea>
-            </mat-form-field>
+            <div class="editor-container">
+                <div>Remarks</div>
+                <md-editor formControlName="remarks" [options]="editorOptions"></md-editor>
+            </div>
         </div>
     </form>
 </mat-dialog-content>

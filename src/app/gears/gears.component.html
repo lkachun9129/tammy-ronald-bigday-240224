@@ -46,7 +46,7 @@
                 <mat-expansion-panel-header [style.background]="box.color">
                     <mat-panel-title><strong>{{box.id}}</strong></mat-panel-title>
                 </mat-expansion-panel-header>
-                <div class="box-panel-container">
+                <div class="items-container">
                     <p>{{box.description}}</p>
                     @for (item of box.items; track item; let index = $index) {
                         <div cdkDrag class="item" [ngClass]="{ 'mobile': useMobileLayout() }"><div>{{index + 1}}</div><div>{{item}}</div></div>
@@ -68,7 +68,7 @@
             <mat-expansion-panel-header [style.background]="'#acb9ca'">
                 <mat-panel-title><strong>未分類物品</strong></mat-panel-title>
             </mat-expansion-panel-header>
-            <div class="box-panel-container">
+            <div class="items-container">
                 <p></p>
                 @for (item of notPackedItems; track item; let index = $index) {
                     <div cdkDrag class="item" [ngClass]="{ 'mobile': useMobileLayout() }"><div>{{index + 1}}</div><div>{{item}}</div></div>
@@ -80,7 +80,7 @@
             <mat-expansion-panel-header [style.background]="'#000000'">
                 <mat-panel-title [style.color]="'#ffffff'"><i class="far fa-trash-alt" [style.margin-right]="'5px'"></i><strong>資源回收筒</strong></mat-panel-title>
             </mat-expansion-panel-header>
-            <div class="filter-panel-container">
+            <div class="items-container">
                 <p></p>
                 @for (item of deletedItems; track item; let index = $index) {
                     <div class="item">

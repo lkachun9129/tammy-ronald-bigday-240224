@@ -1,42 +1,8 @@
-.page-container
-    height: 100vh
-    overflow-y: hidden
-    background: radial-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.15))
-    background-size: 200%
-    animation: aurora 7s infinite
-
-h1 > span
-    font-size: 1.5em
-    background: linear-gradient(345deg, #e78b35, #9232c5)
-    background-clip: text
-    -webkit-text-fill-color: transparent
 .sticky-header
-    position: -webkit-sticky /* Safari */
-    position: sticky
-    top: 0
-    z-index: 2
+    height: auto
 .header
-    display: flex
-    align-items: center
     height: 52px
-    div[mat-icon-button]
-        display: flex
-        align-items: center
-        justify-content: center
-        width: 50px
-        height: 52px
-        color: #9232c5
-    h1
-        flex-grow: 1
-        margin-left: 12px
-    button[mat-stroked-button]
-        margin-right: 12px
-        &.edit-off
-            color: #cccccc
-            background: #ffffff
-        &.edit-on
-            color: #ffffff
-            background: linear-gradient(10deg, #e78b35, #9232c5)
+
 button[mat-menu-item] i
     margin-right: 10px
     width: 25px
@@ -52,6 +18,8 @@ li
     height: calc(100vh - 60px)
 .box-panel
     margin-bottom: 10px
+.items-container
+    padding: 12px 0px
 
 .exit-btn
     position: fixed

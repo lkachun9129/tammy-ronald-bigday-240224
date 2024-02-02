@@ -1,21 +1,23 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { LMarkdownEditorModule, MdEditorOption } from 'ngx-markdown-editor';
 import { Observable, map, startWith } from 'rxjs';
+import { AppService } from '../app.service';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
 import { Event, EventEditForm, Gear, Session } from '../models';
 import { ValuesOf } from '../types';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { AppService } from '../app.service';
 
 @Component({
     selector: 'app-event-edit-dialog',
@@ -39,6 +41,8 @@ import { AppService } from '../app.service';
         MatDialogContent,
         MatDialogActions,
 
+        LMarkdownEditorModule,
+
         AsyncPipe,
         LuxonDateFormatPipe
     ],
@@ -58,6 +62,8 @@ export class EventEditDialog {
 
     filteredParticipants: Observable<string[]>;
 
+    editorOptions: MdEditorOption;
+
     participantCtrl = new FormControl('');
     gearCtrl = new FormControl('');
 
@@ -67,30 +73,17 @@ export class EventEditDialog {
 
     @ViewChild('participantInput') participantInput: ElementRef<HTMLInputElement>;
 
-    private getEventEditFormValue(event: Event): ValuesOf<EventEditForm> {
-        let value: ValuesOf<EventEditForm> = {
-            newEvent: false,
-            description: event.description,
-            startSession: this.data.sessions.filter(x => x.dateTime.equals(event.startDateTime))[0],
-            duration: event.duration,
-            venue: event.venue,
-            participants: [],
-            gears: [],
-            remarks: event.remarks,
-            highPriority: false
-        };
-
-        value.participants.push(...event.participants);
-        value.gears.push(...event.gears);
-
-        return value;
-    }
-
     constructor(
         private readonly _appService: AppService,
+        private readonly _breakpointObserver: BreakpointObserver,
         public dialogRef: MatDialogRef<EventEditDialog>,
         @Inject(MAT_DIALOG_DATA) public data: { event: Event, sessions: Session[], gearMap: { [key: string]: Gear }}
     ) {
+        this.editorOptions = {
+            showPreviewPanel: this._breakpointObserver.isMatched(`(min-width: 550px)`),
+            fontAwesomeVersion: '5'
+        }
+
         this.filteredParticipants = this.participantCtrl.valueChanges.pipe(
             startWith(null),
             map((participant: string | null) => (participant ? this.filterParticipants(participant) : this.allParticipants.slice()))
@@ -171,5 +164,24 @@ export class EventEditDialog {
         if (index !== undefined && index >= 0) {
             this.form.controls.gears.value?.splice(index, 1);
         }
+    }
+
+    private getEventEditFormValue(event: Event): ValuesOf<EventEditForm> {
+        let value: ValuesOf<EventEditForm> = {
+            newEvent: false,
+            description: event.description,
+            startSession: this.data.sessions.filter(x => x.dateTime.equals(event.startDateTime))[0],
+            duration: event.duration,
+            venue: event.venue,
+            participants: [],
+            gears: [],
+            remarks: event.remarks,
+            highPriority: false
+        };
+
+        value.participants.push(...event.participants);
+        value.gears.push(...event.gears);
+
+        return value;
     }
 }

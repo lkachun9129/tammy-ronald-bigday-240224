@@ -160,14 +160,10 @@ export class SchedulesComponent {
     showEventDetails(event: Event) {
         this._dialog.open(EventDetailsDialog, {
             data: event,
-            height: this.useMobileLayout() ? '100%' : '65vh',
-            width: this.useMobileLayout() ? '100%' : 'calc(100% - 50px)',
-            maxWidth: this.useMobileLayout() ? '100%' : '85vw'
+            height: '100%',
+            width: '100%',
+            maxWidth: '100%'
         });
-    }
-
-    private useMobileLayout(): boolean {
-        return !this._breakpointObserver.isMatched(`(min-width: 550px)`);
     }
 
     private getEvent(formValue: ValuesOf<EventEditForm>): Event {
@@ -199,9 +195,9 @@ export class SchedulesComponent {
                 sessions: this.sessions,
                 gearMap: this._gearMap
             },
-            height: this.useMobileLayout() ? '100%' : '65vh',
-            width: this.useMobileLayout() ? '100%' : 'calc(100% - 50px)',
-            maxWidth: this.useMobileLayout() ? '100%' : '85vw'
+            height: '100%',
+            width: '100%',
+            maxWidth: '100%'
         });
 
         dialogRef.afterClosed().subscribe((formValue: ValuesOf<EventEditForm>) => {
@@ -241,9 +237,9 @@ export class SchedulesComponent {
                 sessions: this.sessions,
                 gearMap: this._gearMap
             },
-            height: this.useMobileLayout() ? '100%' : '65vh',
-            width: this.useMobileLayout() ? '100%' : 'calc(100% - 50px)',
-            maxWidth: this.useMobileLayout() ? '100%' : '85vw'
+            height: '100%',
+            width: '100%',
+            maxWidth: '100%'
         });
 
         dialogRef.afterClosed().subscribe((formValue: ValuesOf<EventEditForm>) => {
