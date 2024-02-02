@@ -2,6 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
 import { Router, RouterModule } from '@angular/router';
+import { MarkdownModule } from 'ngx-markdown';
 import { AppService } from '../app.service';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
 import { Event, UserRight } from '../models';
@@ -15,6 +16,7 @@ import { Event, UserRight } from '../models';
         MatDialogClose,
         MatDialogContent,
         MatDialogActions,
+        MarkdownModule,
         LuxonDateFormatPipe,
         RouterModule
     ],

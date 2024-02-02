@@ -19,7 +19,8 @@
         }
     </ul>
     <p>Remarks:</p>
-    <p class="remarks">{{data.remarks}}</p>
+    <!-- <p class="remarks">{{data.remarks}}</p> -->
+    <markdown [data]="data.remarks"></markdown>
 </mat-dialog-content>
 <mat-dialog-actions>
     <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Close</button>
