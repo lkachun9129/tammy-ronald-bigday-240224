@@ -58,10 +58,10 @@ export class AppService {
     gearMap: GearMap = {};
 
     names: string[] = [
+        '姊妹Ceci',
         '姊妹Christy',
         '姊妹Janet',
         '姊妹Kapo',
-        '姊妹Nicole',
         '姊妹Winglam',
         '兄弟Curtis',
         '兄弟May',
