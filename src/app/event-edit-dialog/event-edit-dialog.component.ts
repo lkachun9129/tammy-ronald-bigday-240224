@@ -18,6 +18,7 @@ import { AppService } from '../app.service';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
 import { Event, EventEditForm, Gear, Session } from '../models';
 import { ValuesOf } from '../types';
+import { DeviceDetectorService } from 'ngx-device-detector';
 
 @Component({
     selector: 'app-event-edit-dialog',
@@ -71,10 +72,13 @@ export class EventEditDialog {
         return this._appService.names;
     }
 
+    
+    @ViewChild('gearInput') gearInput: ElementRef<HTMLInputElement>;
     @ViewChild('participantInput') participantInput: ElementRef<HTMLInputElement>;
 
     constructor(
         private readonly _appService: AppService,
+        private readonly _deviceDetectorService: DeviceDetectorService,
         private readonly _breakpointObserver: BreakpointObserver,
         public dialogRef: MatDialogRef<EventEditDialog>,
         @Inject(MAT_DIALOG_DATA) public data: { event: Event, sessions: Session[], gearMap: { [key: string]: Gear }}
@@ -110,6 +114,19 @@ export class EventEditDialog {
         this.dialogRef.close();
     }
 
+    addParticipantManually(): void {
+        let values = this.participantInput.nativeElement.value.split(',');
+        if (values.length > 0) {
+            values.forEach(v => {
+                if (v.trim().length > 0) {
+                    this.form.controls.participants.value?.push(v.trim());
+                }
+            });
+        }
+        this.participantInput.nativeElement.value = '';
+        this.participantCtrl.setValue(null);
+    }
+
     addParticipant(event: MatChipInputEvent): void {
         const value = (event.value || '').trim();
 
@@ -142,6 +159,23 @@ export class EventEditDialog {
         const filterValue = value.toLowerCase();
 
         return this.allParticipants.filter(participant => participant.toLowerCase().includes(filterValue));
+    }
+
+    get isMobileDevice(): boolean {
+        return this._deviceDetectorService.isMobile();
+    }
+
+    addGearManually(): void {
+        let values = this.gearInput.nativeElement.value.split(',');
+        if (values.length > 0) {
+            values.forEach(v => {
+                if (v.trim().length > 0) {
+                    this.form.controls.gears.value?.push(v.trim());
+                }
+            });
+        }
+        this.gearInput.nativeElement.value = '';
+        this.gearCtrl.setValue(null);
     }
 
     addGear(event: MatChipInputEvent): void {

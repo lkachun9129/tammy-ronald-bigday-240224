@@ -53,8 +53,13 @@
                         </mat-chip-row>
                     }
                 </mat-chip-grid>
-                <input placeholder="Add Gear" #participantInput [formControl]="gearCtrl" [matChipInputFor]="gearChipGrid"
+                <input placeholder="Add Gear" #gearInput [formControl]="gearCtrl" [matChipInputFor]="gearChipGrid"
                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes" (matChipInputTokenEnd)="addGear($event)" />
+                @if (isMobileDevice) {
+                    <button mat-icon-button matSuffix (click)="addGearManually()">
+                        <i class="fas fa-plus-circle"></i>
+                    </button>
+                }
             </mat-form-field>
 
             <mat-form-field class="input-participants" subscriptSizing="dynamic">
@@ -72,6 +77,11 @@
                 <input placeholder="Add Participant" #participantInput [formControl]="participantCtrl"
                     [matChipInputFor]="participantChipGrid" [matAutocomplete]="participantAutoComplete"
                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes" (matChipInputTokenEnd)="addParticipant($event)" />
+                @if (isMobileDevice) {
+                    <button mat-icon-button matSuffix (click)="addParticipantManually()">
+                        <i class="fas fa-plus-circle"></i>
+                    </button>
+                }
                 <mat-autocomplete #participantAutoComplete="matAutocomplete" (optionSelected)="onParticipantSelected($event)">
                     @for (participant of filteredParticipants | async; track participant) {
                         <mat-option [value]="participant">{{participant}}</mat-option>
