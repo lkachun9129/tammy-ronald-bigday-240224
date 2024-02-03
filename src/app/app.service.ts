@@ -68,6 +68,7 @@ export class AppService {
         '兄弟Ngai',
         '兄弟Norman',
         '兄弟Sam',
+        '車手Dominic',
         '攝影師',
         '化妝師',
         'Ronald',
