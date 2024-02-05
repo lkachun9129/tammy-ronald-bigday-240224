@@ -19,6 +19,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AppService } from '../app.service';
 import { ConfirmationDialog } from '../confirmation-dialog/confirmation-dialog.component';
 import { FireDatabaseModule } from '../fire-database-module/fire-database.module';
+import { GearTimelineDialog } from '../gear-timeline-dialog/gear-timeline-dialog.component';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
 import { Box, UserRight } from '../models';
 
@@ -75,6 +76,14 @@ export class GearsComponent {
         return this._appService.deletedItems;
     }
 
+    gearLists: CdkDropList[] = [];
+
+    get dropListIds(): string[] {
+        let idList = this.boxes.map(b => b.id);
+        idList.push('uncategorized');
+        return idList;
+    }
+
     private _expandedBoxes: string[] = [];
 
     constructor(
@@ -94,12 +103,12 @@ export class GearsComponent {
             });
     }
 
-    gearLists: CdkDropList[] = [];
-
-    get dropListIds(): string[] {
-        let idList = this.boxes.map(b => b.id);
-        idList.push('uncategorized');
-        return idList;
+    viewTimeline(gear: string) {
+        this._matDialog.open(GearTimelineDialog, {
+            data: {
+                gear: gear
+            }
+        });
     }
 
     onGearListLoaded(dropList: CdkDropList) {

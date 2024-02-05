@@ -1,0 +1,24 @@
+@if (box) {
+    <h1 mat-dialog-title [style.background]="box.color">{{ gear }}</h1>
+} @else {
+    <h1 mat-dialog-title [style.background]="'#acb9ca'">{{ gear }}</h1>
+}
+
+<mat-dialog-content class="main-content">
+    @for (event of events; track event; let index = $index) {
+        <div class="event">
+            <div class="icon">
+                @if (index > 0) {
+                    <i class="fas fa-grip-lines-vertical timeline"></i>
+                }
+                <i class="fas fa-dot-circle"></i>
+            </div>
+            <div class="time">{{ event.startDateTime | luxonDateFormat: 'HH:mm'}} - {{ event.endDateTime | luxonDateFormat: 'HH:mm'}}</div>
+            <div class="venue">{{ event.venue }}</div>
+            <div class="description">{{ event.description }}</div>
+        </div>
+    }
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button (click)="onCancelClicked()">Cancel</button>
+</mat-dialog-actions>
