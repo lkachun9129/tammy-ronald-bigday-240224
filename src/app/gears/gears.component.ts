@@ -1,6 +1,7 @@
 import {
     CdkDrag,
     CdkDragDrop,
+    CdkDragHandle,
     CdkDropList,
     moveItemInArray,
     transferArrayItem
@@ -32,6 +33,7 @@ import { Box, UserRight } from '../models';
 
         CdkDropList,
         CdkDrag,
+        CdkDragHandle,
 
         MatButtonModule,
         MatCheckboxModule,

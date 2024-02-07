@@ -50,9 +50,13 @@
                     <p>{{box.description}}</p>
                     @for (item of box.items; track item; let index = $index) {
                         @if (editMode) {
-                            <div cdkDrag class="item" [ngClass]="{ 'mobile': useMobileLayout() }"><div>{{index + 1}}</div><div>{{item}}</div></div>
+                            @if (useMobileLayout()) {
+                                <div cdkDrag class="item"><div>{{index + 1}}</div><div>{{item}}</div><div cdkDragHandle><i class="fas fa-grip-vertical"></i></div></div>
+                            } @else {
+                                <div cdkDrag class="item"><div>{{index + 1}}</div><div>{{item}}</div></div>
+                            }
                         } @else {
-                            <div cdkDrag class="item" [ngClass]="{ 'mobile': useMobileLayout() }" (click)="viewTimeline(item)"><div>{{index + 1}}</div><div>{{item}}</div></div>
+                            <div class="item" (click)="viewTimeline(item)"><div>{{index + 1}}</div><div>{{item}}</div></div>
                         }
                     }
                 </div>
