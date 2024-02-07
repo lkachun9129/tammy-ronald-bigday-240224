@@ -107,7 +107,8 @@ export class GearsComponent {
         this._matDialog.open(GearTimelineDialog, {
             data: {
                 gear: gear
-            }
+            },
+            width: '85vh'
         });
     }
 

@@ -1,6 +1,7 @@
 .main-content
     padding: 12px
 .event
+    display: flex
     .icon
         display: inline-block
         margin-right: 12px
@@ -9,11 +10,14 @@
                 position: absolute
                 left: 15px
                 transform: translateY(-8px)
+    .content
+        display: inline-block
     .time
         display: inline-block
         width: 100px
     .venue
         display: inline-block
         width: 120px
+@media (min-width: 550px)
     .description
         display: inline-block
