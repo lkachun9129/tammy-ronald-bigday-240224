@@ -206,4 +206,19 @@ export class GearsComponent {
     getItemOwner(item: string): string {
         return this._appService.packingStatus[item]?.owner;
     }
+
+    sortBoxes() {
+        this._appService.boxes.sort((a: Box, b: Box) => {
+            if (a.id === 'X' || b.id === 'X') {
+                return a.id === 'X'? 1 : -1;
+            } else if (a.id.startsWith('GIP') && !b.id.startsWith('GIP')) {
+                return 1;
+            } else if (!a.id.startsWith('GIP') && b.id.startsWith('GIP')) {
+                return -1;
+            } else {
+                return a.id.localeCompare(b.id);
+            }
+        });
+        this._appService.saveGearsToDatabase();
+    }
 }

@@ -124,3 +124,8 @@
         </mat-expansion-panel>
     </div>
 </div>
+@if (editMode) {
+    <button mat-fab class="sort-btn" color="primary" (click)="sortBoxes()">
+        <i class="fas fa-sort-alpha-down"></i>
+    </button>
+}
