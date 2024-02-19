@@ -1,0 +1,24 @@
+@if (form.value.newBox) {
+    <h1 mat-dialog-title>Add Box</h1>
+} @else {
+    <h1 mat-dialog-title>Edit Box</h1>
+}
+<mat-dialog-content class="main-content">
+    <form [formGroup]="form">
+        <div class="form-group">
+            <mat-form-field subscriptSizing="dynamic" class="input-name">
+                <mat-label>Name</mat-label>
+                <input matInput formControlName="name">
+            </mat-form-field>
+            <mat-form-field subscriptSizing="dynamic" class="input-desc">
+                <mat-label>Description</mat-label>
+                <input matInput formControlName="description">
+            </mat-form-field>
+            <ngx-colors ngx-colors-trigger matInput [formControl]="form.controls.color"></ngx-colors>
+        </div>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button (click)="onCancelClicked()">Cancel</button>
+    <button mat-button [mat-dialog-close]="form.value" cdkFocusInitial>Save</button>
+</mat-dialog-actions>

@@ -22,7 +22,9 @@ import { ConfirmationDialog } from '../confirmation-dialog/confirmation-dialog.c
 import { FireDatabaseModule } from '../fire-database-module/fire-database.module';
 import { GearTimelineDialog } from '../gear-timeline-dialog/gear-timeline-dialog.component';
 import { LuxonDateFormatPipe } from '../luxon-date-format-pipe.pipe';
-import { Box, UserRight } from '../models';
+import { Box, BoxEditForm, UserRight } from '../models';
+import { BoxEditDialog } from '../box-edit-dialog/box-edit-dialog.component';
+import { ValuesOf } from '../types';
 
 @Component({
     selector: 'app-gears',
@@ -205,6 +207,63 @@ export class GearsComponent {
 
     getItemOwner(item: string): string {
         return this._appService.packingStatus[item]?.owner;
+    }
+
+    addBox() {
+        const dialogRef = this._matDialog.open(BoxEditDialog, {
+            data: null,
+            height: '100%',
+            width: '100%',
+            maxWidth: '100%'
+        });
+
+        dialogRef.afterClosed().subscribe((formValue: ValuesOf<BoxEditForm>) => {
+            if (!formValue) {
+                return;
+            }
+
+            this.boxes.push({
+                id: formValue.name,
+                description: formValue.description,
+                color: formValue.color,
+                items: []
+            });
+
+            this._expandedBoxes.push(formValue.name);
+            this._appService.saveGearsToDatabase();
+        });
+    }
+
+    editBox(box: Box) {
+        const dialogRef = this._matDialog.open(BoxEditDialog, {
+            data: box,
+            height: '100%',
+            width: '100%',
+            maxWidth: '100%'
+        });
+
+        dialogRef.afterClosed().subscribe((formValue: ValuesOf<BoxEditForm>) => {
+            if (!formValue) {
+                return;
+            }
+
+            box.id = formValue.name;
+            box.description = formValue.description;
+            box.color = formValue.color;
+
+            this._expandedBoxes.push(formValue.name);
+            this._appService.saveGearsToDatabase();
+        });
+    }
+
+    removeBox(box: Box) {
+        this._matDialog.open(ConfirmationDialog).afterClosed().subscribe((confirmDelete: boolean) => {
+            if (confirmDelete) {
+                this.notPackedItems.push(...box.items);
+                this.boxes.splice(this.boxes.indexOf(box), 1);
+                this._appService.saveGearsToDatabase();
+            }
+        });
     }
 
     sortBoxes() {

@@ -146,6 +146,11 @@ export class AppService {
                                 });
 
                                 this._appData.boxes = dataSnapshot.boxes ? dataSnapshot.boxes : [];
+                                this._appData.boxes.forEach(b => {
+                                    if (!b.items) {
+                                        b.items = [];
+                                    }
+                                })
                                 this._appData.notPackedItems = dataSnapshot.notPackedItems ? dataSnapshot.notPackedItems : [];
                                 this._appData.deletedItems = dataSnapshot.deletedItems ? dataSnapshot.deletedItems : [];
                                 this._appData.packingStatus = dataSnapshot.packingStatus ? dataSnapshot.packingStatus : {};

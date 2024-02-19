@@ -132,4 +132,11 @@ export interface EventEditForm {
     highPriority: FormControl<boolean>;
 }
 
+export interface BoxEditForm {
+    newBox: FormControl<boolean>;
+    name: FormControl<string>;
+    description: FormControl<string>;
+    color: FormControl<string>;
+}
+
 export type LocalDateTime = number[];

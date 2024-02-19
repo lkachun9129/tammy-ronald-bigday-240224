@@ -44,7 +44,17 @@
                 [cdkDropListDisabled]="!editMode"
                 (cdkDropListDropped)="drop($event)">
                 <mat-expansion-panel-header [style.background]="box.color">
-                    <mat-panel-title><strong>{{box.id}}</strong></mat-panel-title>
+                    <mat-panel-title>
+                        <strong class="box-id">{{box.id}}</strong>
+                        @if (editMode) {
+                            <button mat-flat-button (click)="editBox(box)">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                            <button mat-flat-button color="warn" (click)="removeBox(box)">
+                                <i class="far fa-trash-alt"></i>
+                            </button>
+                        }
+                    </mat-panel-title>
                 </mat-expansion-panel-header>
                 <div class="items-container">
                     <p>{{box.description}}</p>
@@ -127,5 +137,8 @@
 @if (editMode) {
     <button mat-fab class="sort-btn" color="primary" (click)="sortBoxes()">
         <i class="fas fa-sort-alpha-down"></i>
+    </button>
+    <button mat-fab class="add-btn" color="basic" (click)="addBox()">
+        <i class="fas fa-plus"></i>
     </button>
 }
