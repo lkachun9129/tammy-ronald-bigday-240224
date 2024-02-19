@@ -3,7 +3,7 @@ import { AngularFireDatabase, SnapshotAction } from '@angular/fire/compat/databa
 import { DateTime, Interval } from 'luxon';
 import { Observable, map, mergeMap, of, throwError } from 'rxjs';
 import { AppData as AppDataOld } from './data';
-import { Box, Data, DataSnapshot, Event, EventInput, EventSnapshot, SchemaDefinition, Session, SessionSnapshot, SessionType, UserRight } from './models';
+import { Box, Data, DataSnapshot, Event, EventInput, EventSnapshot, PackingStatus, SchemaDefinition, Session, SessionSnapshot, SessionType, UserRight } from './models';
 import { GearMap } from './types';
 import { Utility } from './utility';
 
@@ -26,7 +26,8 @@ export class AppService {
         sessions: [],
         boxes: [],
         notPackedItems: [],
-        deletedItems: []
+        deletedItems: [],
+        packingStatus: {}
     };
 
     private _committed: boolean = false;
@@ -53,6 +54,10 @@ export class AppService {
 
     get deletedItems(): string[] {
         return this._appData.deletedItems;
+    }
+
+    get packingStatus(): { [key: string]: PackingStatus } {
+        return this._appData.packingStatus;
     }
 
     gearMap: GearMap = {};
@@ -143,6 +148,7 @@ export class AppService {
                                 this._appData.boxes = dataSnapshot.boxes ? dataSnapshot.boxes : [];
                                 this._appData.notPackedItems = dataSnapshot.notPackedItems ? dataSnapshot.notPackedItems : [];
                                 this._appData.deletedItems = dataSnapshot.deletedItems ? dataSnapshot.deletedItems : [];
+                                this._appData.packingStatus = dataSnapshot.packingStatus ? dataSnapshot.packingStatus : {};
 
                                 this.updateMaxParallelEventCount();
                                 this.loadGearMap();
@@ -172,6 +178,16 @@ export class AppService {
         } else {
             this.saveAllToDatabase();
         }
+    }
+
+    removePackingStatusFromDatabase() {
+        this.deletedItems.forEach(item => {
+            this._db.object(`/appData/${this.dbSchema}/packingStatus/${item}`).remove();
+        });
+    }
+
+    updatePackingStatusToDatabase(item: string) {
+        this._db.object(`/appData/${this.dbSchema}/packingStatus/${item}`).set(this._appData.packingStatus[item]);
     }
 
     saveAllToDatabase() {
@@ -355,5 +371,22 @@ export class AppService {
         this.sessions.forEach(x => {
             this.maxParallelEventCount = Math.max(this.maxParallelEventCount, x.parallelEventCount);
         });
+    }
+
+    togglePackingStatus(item: string, owner?: string) {
+        // insert new entry
+        if (!this._appData.packingStatus[item]) {
+            this._appData.packingStatus[item] = {
+                packed: false,
+                owner: null
+            };
+        }
+
+        if (owner !== undefined) {
+            this._appData.packingStatus[item].owner = owner;
+        } else {
+            this._appData.packingStatus[item].packed = !this._appData.packingStatus[item].packed;
+        }
+        this.updatePackingStatusToDatabase(item);
     }
 }

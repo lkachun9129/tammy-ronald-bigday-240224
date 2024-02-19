@@ -10,7 +10,8 @@ export enum Schema {
 
 export enum UserRight {
     Schedule = 'schedule',
-    Supplies = 'supplies'
+    Supplies = 'supplies',
+    Packing = 'packing'
 }
 
 export interface SchemaDefinition {
@@ -32,6 +33,7 @@ export interface DataSnapshot {
     boxes: Box[];
     notPackedItems: string[];
     deletedItems: string[];
+    packingStatus?: { [key: string]: PackingStatus }
 }
 
 export interface SessionSnapshot {
@@ -59,6 +61,7 @@ export interface Data {
     boxes: Box[];
     notPackedItems: string[];
     deletedItems: string[];
+    packingStatus: { [key: string]: PackingStatus };
 }
 
 export enum SessionType {
@@ -104,6 +107,11 @@ export interface Box {
     description: string;
     color: string;
     items: string[];
+}
+
+export interface PackingStatus {
+    packed: boolean;
+    owner: string;
 }
 
 export interface Gear {

@@ -51,12 +51,23 @@
                     @for (item of box.items; track item; let index = $index) {
                         @if (editMode) {
                             @if (useMobileLayout()) {
-                                <div cdkDrag class="item"><div>{{index + 1}}</div><div>{{item}}</div><div cdkDragHandle><i class="fas fa-grip-vertical"></i></div></div>
+                                <div cdkDrag class="item"><div class="idx">{{index + 1}}</div><div class="name">{{item}}</div><div cdkDragHandle><i class="fas fa-grip-vertical"></i></div></div>
                             } @else {
-                                <div cdkDrag class="item"><div>{{index + 1}}</div><div>{{item}}</div></div>
+                                <div cdkDrag class="item"><div class="idx">{{index + 1}}</div><div class="name">{{item}}</div></div>
                             }
+                        } @else if(allowPacking) {
+                            <div class="item">
+                                <mat-checkbox [checked]="getItemPacked(item)" (change)="togglePacked(box.id, item)"></mat-checkbox>
+                                <div class="idx">{{index + 1}}</div>
+                                <div class="name">{{item}}</div>
+                                <mat-select class="owner" [value]="getItemOwner(item)" (selectionChange)="updateOwner($event, box.id, item)">
+                                    @for (name of names; track name) {
+                                        <mat-option [value]="name">{{name}}</mat-option>
+                                    }
+                                </mat-select>
+                            </div>
                         } @else {
-                            <div class="item" (click)="viewTimeline(item)"><div>{{index + 1}}</div><div>{{item}}</div></div>
+                            <div class="item" (click)="viewTimeline(item)"><div class="idx">{{index + 1}}</div><div>{{item}}</div></div>
                         }
                     }
                 </div>
@@ -81,12 +92,12 @@
                 @for (item of notPackedItems; track item; let index = $index) {
                     @if (editMode) {
                         @if (useMobileLayout()) {
-                            <div cdkDrag class="item"><div>{{index + 1}}</div><div>{{item}}</div><div cdkDragHandle><i class="fas fa-grip-vertical"></i></div></div>
+                            <div cdkDrag class="item"><div class="idx">{{index + 1}}</div><div class="name">{{item}}</div><div cdkDragHandle><i class="fas fa-grip-vertical"></i></div></div>
                         } @else {
-                            <div cdkDrag class="item"><div>{{index + 1}}</div><div>{{item}}</div></div>
+                            <div cdkDrag class="item"><div class="idx">{{index + 1}}</div><div class="name">{{item}}</div></div>
                         }
                     } @else {
-                        <div class="item" (click)="viewTimeline(item)"><div>{{index + 1}}</div><div>{{item}}</div></div>
+                        <div class="item" (click)="viewTimeline(item)"><div class="idx">{{index + 1}}</div><div>{{item}}</div></div>
                     }
                 }
             </div>
@@ -100,8 +111,8 @@
                 <p></p>
                 @for (item of deletedItems; track item; let index = $index) {
                     <div class="item">
-                        <div>{{index + 1}}</div>
-                        <div>{{item}}</div>
+                        <div class="idx">{{index + 1}}</div>
+                        <div class="name">{{item}}</div>
                         @if (editMode) {
                             <button mat-stroked-button color="warn" (click)="purgeItem(item)">
                                 <i class="far fa-trash-alt"></i>

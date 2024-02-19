@@ -15,7 +15,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatSelectModule } from '@angular/material/select';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppService } from '../app.service';
 import { ConfirmationDialog } from '../confirmation-dialog/confirmation-dialog.component';
@@ -64,6 +64,10 @@ export class GearsComponent {
         return this._appService.allowEdit;
     }
 
+    get allowPacking(): boolean {
+        return this._appService.hasAccessRight(UserRight.Packing);
+    }
+
     editMode: boolean = false;
 
     get boxes(): Box[] {
@@ -85,6 +89,11 @@ export class GearsComponent {
         idList.push('uncategorized');
         return idList;
     }
+
+    names: string[] = [
+        'Ronald',
+        'Tammy'
+    ];
 
     private _expandedBoxes: string[] = [];
 
@@ -180,4 +189,21 @@ export class GearsComponent {
         return !this._breakpointObserver.isMatched(`(min-width: 550px)`);
     }
 
+    togglePacked(box: string, item: string) {
+        this._expandedBoxes.push(box);
+        this._appService.togglePackingStatus(item);
+    }
+
+    updateOwner(event: MatSelectChange, box: string, item: string) {
+        this._expandedBoxes.push(box);
+        this._appService.togglePackingStatus(item, event.value);
+    }
+
+    getItemPacked(item: string): boolean {
+        return this._appService.packingStatus[item]?.packed;
+    }
+
+    getItemOwner(item: string): string {
+        return this._appService.packingStatus[item]?.owner;
+    }
 }
