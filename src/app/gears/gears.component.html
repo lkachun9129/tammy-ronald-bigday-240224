@@ -46,17 +46,17 @@
                 <mat-expansion-panel-header [style.background]="box.color">
                     <mat-panel-title>
                         <strong class="box-id">{{box.id}}</strong>
-                        @if (editMode) {
-                            <button mat-flat-button (click)="editBox(box)">
-                                <i class="fas fa-pen"></i>
-                            </button>
-                            <button mat-flat-button color="warn" (click)="removeBox(box)">
-                                <i class="far fa-trash-alt"></i>
-                            </button>
-                        }
                     </mat-panel-title>
                 </mat-expansion-panel-header>
                 <div class="items-container">
+                    @if (editMode) {
+                        <button mat-raised-button color="primary" (click)="editBox(box)">
+                            <i class="fas fa-pen"></i><span class="ml-6">Edit</span>
+                        </button>
+                        <button mat-raised-button color="warn" (click)="removeBox(box)">
+                            <i class="far fa-trash-alt"></i><span class="ml-6">Delete</span>
+                        </button>
+                    }
                     <p>{{box.description}}</p>
                     @for (item of box.items; track item; let index = $index) {
                         @if (editMode) {
