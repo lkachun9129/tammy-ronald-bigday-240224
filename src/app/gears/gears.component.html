@@ -36,6 +36,7 @@
             <mat-expansion-panel class="box-panel" hideToggle
                 [expanded]="isExpanded(box.id)"
                 (afterExpand)="onExpanded(box.id)"
+                (afterCollapse)="onCollapsed(box.id)"
                 [id]="box.id" cdkDropList
                 #gearList="cdkDropList"
                 [cdkDropListData]="box.items"

@@ -144,6 +144,13 @@ export class GearsComponent {
         }
     }
 
+    onCollapsed(box: string) {
+        let idx = this._expandedBoxes.indexOf(box);
+        if (idx >= 0) {
+            this._expandedBoxes.splice(idx, 1);
+        }
+    }
+
     onMenuButtonClicked(route: string) {
         this._router.navigate([`/${route}/${this._appService.dbSchema}`]);
     }
