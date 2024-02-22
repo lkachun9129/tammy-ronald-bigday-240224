@@ -226,6 +226,10 @@ export class AppService {
             deletedItems: this.deletedItems
         }
 
+        if (this.hasAccessRight(UserRight.Packing)) {
+            data.packingStatus = this.packingStatus;
+        }
+
         this._db.object(`/appData/${this.dbSchema}`).set(data).then((value) => {
             console.log(value);
         }, (reason) => {
